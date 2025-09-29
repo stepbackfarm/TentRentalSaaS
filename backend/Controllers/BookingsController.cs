@@ -25,7 +25,7 @@ namespace TentRentalSaaS.Api.Controllers
             // Placeholder for booking and payment processing service
             var createdBooking = new Booking
             {
-                Id = Guid.NewGuid(),
+                BookingId = Guid.NewGuid(),
                 CustomerName = bookingRequest.CustomerName,
                 CustomerEmail = bookingRequest.CustomerEmail,
                 EventDate = bookingRequest.EventDate,
