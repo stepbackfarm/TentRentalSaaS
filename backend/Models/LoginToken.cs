@@ -8,11 +8,11 @@ namespace TentRentalSaaS.Api.Models
         [Key]
         public Guid TokenId { get; set; }
         public Guid CustomerId { get; set; }
-        public string Token { get; set; }
+        public string Token { get; set; } = string.Empty;
         public DateTime ExpiryDate { get; set; }
         public DateTime CreatedDate { get; set; }
 
         // Navigation property
-        public Customer Customer { get; set; }
+        public Customer Customer { get; set; } = null!;
     }
 }
