@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TentRentalSaaS.Api.Models;
 
-namespace TentRentalSaaS.backend
+namespace TentRentalSaaS.Api.Models
 {
     public class ApiDbContext : DbContext
     {
