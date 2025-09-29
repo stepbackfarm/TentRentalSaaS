@@ -10,11 +10,11 @@ namespace TentRentalSaaS.Api.Models
         public Guid Id => BookingId; // Alias for compatibility
         public Guid CustomerId { get; set; }
         public DateTime EventDate { get; set; }
-        public string EventLocation { get; set; }
+        public string EventLocation { get; set; } = string.Empty;
         public decimal RentalFee { get; set; }
         public decimal SecurityDeposit { get; set; }
         public decimal DeliveryFee { get; set; }
-        public string Status { get; set; } // e.g., "Pending", "Confirmed", "Cancelled"
+        public string Status { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public DateTime LastModifiedDate { get; set; }
         
@@ -27,6 +27,6 @@ namespace TentRentalSaaS.Api.Models
         public decimal TotalPrice { get; set; }
 
         // Navigation property
-        public Customer Customer { get; set; }
+        public Customer Customer { get; set; } = null!;
     }
 }
