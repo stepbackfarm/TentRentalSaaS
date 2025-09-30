@@ -80,22 +80,26 @@ This document provides a detailed, step-by-step task list for completing Phase 2
 
 ## Stage 5: Styling & Responsive Design
 
-- [ ] **Task 5.1: Implement Basic Styling**
+- [x] **Task 5.1: Implement Basic Styling**
   - Use a simple CSS strategy (e.g., CSS Modules, a lightweight framework like Pico.css, or Tailwind CSS) to apply a clean and professional look to the application.
 
-- [ ] **Task 5.2: Ensure Mobile Responsiveness**
+- [x] **Task 5.2: Ensure Mobile Responsiveness**
   - Use CSS media queries to ensure the layout adapts correctly to mobile screen sizes. The calendar and booking form must be usable on a phone.
 
 ## Stage 6: Deployment
 
-- [ ] **Task 6.1: Configure Vercel**
+- [x] **Task 6.1: Configure Vercel**
   - Create a new project on Vercel.
   - Connect the Vercel project to the Git repository.
   - Configure the build settings for a Vite/React project.
 
-- [ ] **Task 6.2: Set Environment Variables**
+- [x] **Task 6.2: Set Environment Variables**
   - In the Vercel project settings, add an environment variable for the backend API URL (`VITE_API_BASE_URL`).
 
-- [ ] **Task 6.3: Deploy to Production**
+- [x] **Task 6.3: Deploy to Production**
   - Push the code to the `main` branch to trigger the first production deployment.
   - Verify that the live site is working correctly.
+
+## Summary of Deployment Phase
+
+Deployment of the frontend to Vercel and the backend to Google Cloud Run has been successfully completed. Initial 404 errors were resolved by correctly configuring the Vercel project's root directory and implementing a proxy rewrite rule in `frontend/vercel.json` to route API requests to the Google Cloud Run backend. The backend is running at `https://tentrentalsaas-api-975936251815.us-central1.run.app` and the frontend on Vercel is now successfully communicating with it.
