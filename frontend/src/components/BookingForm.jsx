@@ -40,34 +40,62 @@ function BookingForm({ selectedDate }) {
     }
   };
 
+  const cardElementOptions = {
+    style: {
+      base: {
+        color: '#ffffff',
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+          color: '#aab7c4'
+        }
+      },
+      invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a'
+      }
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Booking Details for {selectedDate ? selectedDate.toDateString() : 'N/A'}</h2>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <h2 className="text-lg font-semibold text-center text-white">
+        Booking for: {selectedDate ? selectedDate.toLocaleDateString() : 'N/A'}
+      </h2>
       <div>
-        <label htmlFor="customerName">Name:</label>
+        <label htmlFor="customerName" className="block text-sm font-medium text-gray-300 mb-1">Name</label>
         <input
           type="text"
           id="customerName"
           value={customerName}
           onChange={(e) => setCustomerName(e.target.value)}
           required
+          className="w-full bg-gray-800 text-white p-2 rounded-md border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
       <div>
-        <label htmlFor="customerEmail">Email:</label>
+        <label htmlFor="customerEmail" className="block text-sm font-medium text-gray-300 mb-1">Email</label>
         <input
           type="email"
           id="customerEmail"
           value={customerEmail}
           onChange={(e) => setCustomerEmail(e.target.value)}
           required
+          className="w-full bg-gray-800 text-white p-2 rounded-md border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
       <div>
-        <label htmlFor="card-element">Credit or debit card</label>
-        <CardElement id="card-element" />
+        <label htmlFor="card-element" className="block text-sm font-medium text-gray-300 mb-1">Credit or debit card</label>
+        <div className="p-2 bg-gray-800 rounded-md border border-gray-600">
+          <CardElement id="card-element" options={cardElementOptions} />
+        </div>
       </div>
-      <button type="submit" disabled={!stripe || !selectedDate}>
+      <button
+        type="submit"
+        disabled={!stripe || !selectedDate}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed"
+      >
         Book Now
       </button>
     </form>
