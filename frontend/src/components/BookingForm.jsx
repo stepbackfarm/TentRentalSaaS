@@ -64,37 +64,37 @@ function BookingForm({ selectedDate }) {
         Booking for: {selectedDate ? selectedDate.toLocaleDateString() : 'N/A'}
       </h2>
       <div>
-        <label htmlFor="customerName" className="block text-sm font-medium text-gray-300 mb-1">Name</label>
+        <label htmlFor="customerName" className="block text-sm font-bold text-gray-300 mb-1">Name</label>
         <input
           type="text"
           id="customerName"
           value={customerName}
           onChange={(e) => setCustomerName(e.target.value)}
           required
-          className="w-full bg-gray-800 text-white p-2 rounded-md border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+          className="p-2 rounded-md border border-gray-300 w-full"
         />
       </div>
       <div>
-        <label htmlFor="customerEmail" className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+        <label htmlFor="customerEmail" className="block text-sm font-bold text-gray-300 mb-1">Email</label>
         <input
           type="email"
           id="customerEmail"
           value={customerEmail}
           onChange={(e) => setCustomerEmail(e.target.value)}
           required
-          className="w-full bg-gray-800 text-white p-2 rounded-md border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+          className="p-2 rounded-md border border-gray-300 w-full"
         />
       </div>
       <div>
-        <label htmlFor="card-element" className="block text-sm font-medium text-gray-300 mb-1">Credit or debit card</label>
-        <div className="p-2 bg-gray-800 rounded-md border border-gray-600">
+        <label htmlFor="card-element" className="block text-sm font-bold text-gray-300 mb-1">Credit or debit card</label>
+        <div className="p-2 rounded-md border border-gray-300">
           <CardElement id="card-element" options={cardElementOptions} />
         </div>
       </div>
       <button
         type="submit"
         disabled={!stripe || !selectedDate}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed"
+        className="w-full button-primary font-bold py-2 px-4 rounded-md transition-colors duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed"
       >
         Book Now
       </button>

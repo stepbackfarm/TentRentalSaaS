@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAvailability } from '../services/api';
 import DatePicker from 'react-datepicker';
-// import 'react-datepicker/dist/react-datepicker.css'; // Removed for custom styling
+import 'react-datepicker/dist/react-datepicker.css';
 
 function Calendar({ onDateSelect }) {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -39,8 +39,8 @@ function Calendar({ onDateSelect }) {
         dayClassName={(date) =>
           `mx-1 my-1 p-2 rounded-full text-center cursor-pointer transition-colors duration-200 ` +
           (bookedDates.some(d => d.getTime() === date.getTime())
-            ? 'bg-red-500 text-gray-300 cursor-not-allowed'
-            : 'hover:bg-blue-500')
+            ? 'bg-red-600 text-gray-300 cursor-not-allowed'
+            : 'hover:bg-blue-600')
         }
         monthClassName={() => 'bg-gray-700'}
         headerClassName="bg-gray-700 p-2 rounded-t-lg"
