@@ -3,11 +3,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copy the .csproj files and restore dependencies
-COPY backend/*.csproj ./
+COPY *.csproj ./
 RUN dotnet restore
 
 # Copy the rest of the backend files and build the application
-COPY backend/. ./
+COPY . ./
 RUN dotnet build -c Release -o /app/build
 
 # Publish the application
