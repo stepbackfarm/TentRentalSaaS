@@ -6,6 +6,9 @@ import { createBooking } from '../services/api';
 function BookingForm({ selectedDate }) {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [tentType, setTentType] = useState('Standard');
+  const [numberOfTents, setNumberOfTents] = useState(1);
+  const [specialRequests, setSpecialRequests] = useState('');
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -31,6 +34,9 @@ function BookingForm({ selectedDate }) {
           eventDate: selectedDate,
           customerName,
           customerEmail,
+          tentType,
+          numberOfTents,
+          specialRequests,
           paymentMethodId: paymentMethod.id,
         });
         navigate('/confirmation');
@@ -47,6 +53,7 @@ function BookingForm({ selectedDate }) {
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         fontSmoothing: 'antialiased',
         fontSize: '16px',
+        lineHeight: '2.5',
         '::placeholder': {
           color: '#aab7c4'
         }
@@ -86,8 +93,44 @@ function BookingForm({ selectedDate }) {
         />
       </div>
       <div>
+        <label htmlFor="tentType" className="block text-sm font-bold text-gray-300 mb-1">Tent Type</label>
+        <select
+          id="tentType"
+          value={tentType}
+          onChange={(e) => setTentType(e.target.value)}
+          required
+          className="p-2 rounded-md border border-gray-300 w-full"
+        >
+          <option value="Standard">Standard</option>
+          <option value="Deluxe">Deluxe</option>
+          <option value="Luxury">Luxury</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="numberOfTents" className="block text-sm font-bold text-gray-300 mb-1">Number of Tents</label>
+        <input
+          type="number"
+          id="numberOfTents"
+          value={numberOfTents}
+          onChange={(e) => setNumberOfTents(parseInt(e.target.value, 10))}
+          required
+          min="1"
+          className="p-2 rounded-md border border-gray-300 w-full"
+        />
+      </div>
+      <div>
+        <label htmlFor="specialRequests" className="block text-sm font-bold text-gray-300 mb-1">Special Requests</label>
+        <textarea
+          id="specialRequests"
+          value={specialRequests}
+          onChange={(e) => setSpecialRequests(e.target.value)}
+          rows="3"
+          className="p-2 rounded-md border border-gray-300 w-full"
+        />
+      </div>
+      <div>
         <label htmlFor="card-element" className="block text-sm font-bold text-gray-300 mb-1">Credit or debit card</label>
-        <div className="p-2 rounded-md border border-gray-300">
+        <div className="p-2 rounded-md border border-gray-300 min-h-[42px] flex items-center">
           <CardElement id="card-element" options={cardElementOptions} />
         </div>
       </div>
