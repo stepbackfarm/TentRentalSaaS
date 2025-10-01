@@ -53,7 +53,6 @@ function BookingForm({ selectedDate }) {
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         fontSmoothing: 'antialiased',
         fontSize: '16px',
-        lineHeight: '2.5',
         '::placeholder': {
           color: '#aab7c4'
         }
@@ -130,8 +129,8 @@ function BookingForm({ selectedDate }) {
       </div>
       <div>
         <label htmlFor="card-element" className="block text-sm font-bold text-gray-300 mb-1">Credit or debit card</label>
-        <div className="p-2 rounded-md border border-gray-300 min-h-[42px] flex items-center">
-          <CardElement id="card-element" options={cardElementOptions} />
+        <div className="p-2 rounded-md border border-gray-300 min-h-[42px] flex items-center bg-gray-700">
+          <CardElement id="card-element" options={cardElementOptions} className="w-full" />
         </div>
       </div>
       <button
