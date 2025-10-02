@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://tentrental-backend-975936251815.us-central1.run.app"
+      "destination": "https://tentrental-backend-975936251815.us-central1.run.app/api/$1"
     }
   ]
 }
