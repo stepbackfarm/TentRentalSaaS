@@ -6,10 +6,11 @@ namespace TentRentalSaaS.Api.Models
     public class Booking
     {
         [Key]
-        public Guid BookingId { get; set; }
-        public Guid Id => BookingId; // Alias for compatibility
+        public Guid Id { get; set; }
         public Guid CustomerId { get; set; }
         public DateTime EventDate { get; set; }
+        public DateTime BookingDate { get; set; }
+        public string? StripePaymentIntentId { get; set; }
         public string EventLocation { get; set; } = string.Empty;
         public decimal RentalFee { get; set; }
         public decimal SecurityDeposit { get; set; }
