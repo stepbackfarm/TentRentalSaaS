@@ -23,5 +23,8 @@ namespace TentRentalSaaS.Api.DTOs
         public int NumberOfTents { get; set; }
 
         public string? SpecialRequests { get; set; }
+
+        [Required]
+        public string PaymentMethodId { get; set; } = string.Empty;
     }
 }

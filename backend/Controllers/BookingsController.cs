@@ -5,12 +5,21 @@ using System.Threading.Tasks;
 using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
 
+using TentRentalSaaS.Api.Services;
+
 namespace TentRentalSaaS.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class BookingsController : ControllerBase
     {
+        private readonly IBookingService _bookingService;
+
+        public BookingsController(IBookingService bookingService)
+        {
+            _bookingService = bookingService;
+        }
+
         [HttpGet("availability")]
         public IActionResult GetAvailability([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
@@ -22,20 +31,7 @@ namespace TentRentalSaaS.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingRequestDto bookingRequest)
         {
-            // Placeholder for booking and payment processing service
-            var createdBooking = new Booking
-            {
-                BookingId = Guid.NewGuid(),
-                CustomerName = bookingRequest.CustomerName,
-                CustomerEmail = bookingRequest.CustomerEmail,
-                EventDate = bookingRequest.EventDate,
-                TentType = bookingRequest.TentType,
-                NumberOfTents = bookingRequest.NumberOfTents,
-                SpecialRequests = bookingRequest.SpecialRequests,
-                Status = "Confirmed", // Placeholder status
-                TotalPrice = bookingRequest.NumberOfTents * 100 // Placeholder price
-            };
-
+            var createdBooking = await _bookingService.CreateBookingAsync(bookingRequest);
             return StatusCode(201, createdBooking);
         }
     }
