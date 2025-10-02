@@ -15,10 +15,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
+    options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.AllowAnyOrigin()
+            builder.WithOrigins("https://tent-rental-hh1bx2kh8-davids-projects-15ffe845.vercel.app",
+                                "http://localhost:5173",
+                                "http://localhost:5174")
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
@@ -34,7 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigin");
 app.MapControllers();
 
 var summaries = new[]
