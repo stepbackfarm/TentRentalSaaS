@@ -5,6 +5,6 @@ namespace TentRentalSaaS.Api.Services
 {
     public interface IBookingService
     {
-        Task<Booking> CreateBookingAsync(BookingRequestDto bookingRequest);
+        Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest);
     }
 }

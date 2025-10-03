@@ -24,7 +24,7 @@ namespace TentRentalSaaS.Api.Models
         public string CustomerEmail { get; set; } = string.Empty;
         public string TentType { get; set; } = string.Empty;
         public int NumberOfTents { get; set; }
-        public string SpecialRequests { get; set; } = string.Empty;
+        public string? SpecialRequests { get; set; }
         public decimal TotalPrice { get; set; }
 
         // Navigation property

@@ -29,7 +29,7 @@ namespace TentRentalSaaS.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBooking([FromBody] BookingRequestDto bookingRequest)
+        public async Task<ActionResult<BookingResponseDto>> CreateBooking([FromBody] BookingRequestDto bookingRequest)
         {
             var createdBooking = await _bookingService.CreateBookingAsync(bookingRequest);
             return StatusCode(201, createdBooking);
