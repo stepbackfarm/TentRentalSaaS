@@ -5,8 +5,26 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApiDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Build connection string from environment variables for production
+if (builder.Environment.IsProduction())
+{
+    var dbHost = builder.Configuration["DB_HOST"];
+    var dbName = builder.Configuration["DB_NAME"];
+    var dbUser = builder.Configuration["DB_USER"];
+    var dbPassword = builder.Configuration["DB_PASSWORD"]; // Injected from Secret Manager by the deployment service
+
+    var connectionString = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPassword}";
+
+    builder.Services.AddDbContext<ApiDbContext>(options =>
+        options.UseNpgsql(connectionString));
+}
+else
+{
+    // Use the local connection string for development
+    builder.Services.AddDbContext<ApiDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
