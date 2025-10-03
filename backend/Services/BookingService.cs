@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Stripe;
 using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
 
@@ -12,28 +9,22 @@ namespace TentRentalSaaS.Api.Services
     public class BookingService : IBookingService
     {
         private readonly ApiDbContext _dbContext;
-        private readonly IConfiguration _configuration;
+        private readonly IPaymentService _paymentService;
 
-        public BookingService(ApiDbContext dbContext, IConfiguration configuration)
+        public BookingService(ApiDbContext dbContext, IPaymentService paymentService)
         {
             _dbContext = dbContext;
-            _configuration = configuration;
+            _paymentService = paymentService;
         }
 
-        public async Task<Booking> CreateBookingAsync(BookingRequestDto bookingRequest)
+        public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
         {
-            StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
-
-            var paymentIntentService = new PaymentIntentService();
-            var paymentIntent = await paymentIntentService.CreateAsync(new PaymentIntentCreateOptions
-            {
-                Amount = 1000, // Example: $10.00
-                Currency = "usd",
-                PaymentMethod = bookingRequest.PaymentMethodId,
-                ConfirmationMethod = "manual",
-                Confirm = true,
-                ReturnUrl = "https://localhost:3000/confirmation", // This should be your frontend confirmation URL
-            });
+            var paymentIntent = await _paymentService.CreatePaymentIntentAsync(
+                1000, // Example: $10.00
+                "usd",
+                bookingRequest.PaymentMethodId,
+                "https://localhost:3000/confirmation" // This should be your frontend confirmation URL
+            );
 
             // Find existing customer or create a new one
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);
@@ -45,7 +36,7 @@ namespace TentRentalSaaS.Api.Services
                 var firstName = nameParts.Length > 0 ? nameParts[0] : string.Empty;
                 var lastName = nameParts.Length > 1 ? nameParts[1] : string.Empty;
 
-                customer = new TentRentalSaaS.Api.Models.Customer
+                customer = new Customer
                 {
                     FirstName = firstName,
                     LastName = lastName,
@@ -74,7 +65,20 @@ namespace TentRentalSaaS.Api.Services
             _dbContext.Bookings.Add(booking);
             await _dbContext.SaveChangesAsync();
 
-            return booking;
+            // Map the booking entity to the response DTO
+            var bookingResponse = new BookingResponseDto
+            {
+                Id = booking.Id,
+                EventDate = booking.EventDate,
+                Status = booking.Status,
+                TentType = booking.TentType,
+                NumberOfTents = booking.NumberOfTents,
+                CustomerName = booking.CustomerName,
+                CustomerEmail = booking.CustomerEmail,
+                StripePaymentIntentId = booking.StripePaymentIntentId
+            };
+
+            return bookingResponse;
         }
     }
 }
