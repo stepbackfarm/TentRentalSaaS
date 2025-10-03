@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Stripe;
 using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
@@ -44,7 +45,7 @@ namespace TentRentalSaaS.Api.Services
                 var firstName = nameParts.Length > 0 ? nameParts[0] : string.Empty;
                 var lastName = nameParts.Length > 1 ? nameParts[1] : string.Empty;
 
-                customer = new Customer
+                customer = new TentRentalSaaS.Api.Models.Customer
                 {
                     FirstName = firstName,
                     LastName = lastName,
