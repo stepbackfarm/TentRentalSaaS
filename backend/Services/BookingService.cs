@@ -34,11 +34,28 @@ namespace TentRentalSaaS.Api.Services
                 ReturnUrl = "https://localhost:3000/confirmation", // This should be your frontend confirmation URL
             });
 
-            // For now, let's just create a dummy booking model and return it.
-            // In a real application, you would save this to your database.
+            // Find existing customer or create a new one
+            var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);
+
+            if (customer == null)
+            {
+                // A simple way to split name into first and last
+                var nameParts = bookingRequest.CustomerName.Split(' ', 2);
+                var firstName = nameParts.Length > 0 ? nameParts[0] : string.Empty;
+                var lastName = nameParts.Length > 1 ? nameParts[1] : string.Empty;
+
+                customer = new Customer
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = bookingRequest.CustomerEmail,
+                    CreatedDate = DateTime.UtcNow,
+                    LastModifiedDate = DateTime.UtcNow
+                };
+            }
+
             var booking = new Booking
             {
-                Id = Guid.NewGuid(),
                 CustomerName = bookingRequest.CustomerName,
                 CustomerEmail = bookingRequest.CustomerEmail,
                 EventDate = bookingRequest.EventDate,
@@ -46,8 +63,11 @@ namespace TentRentalSaaS.Api.Services
                 NumberOfTents = bookingRequest.NumberOfTents,
                 SpecialRequests = bookingRequest.SpecialRequests,
                 BookingDate = DateTime.UtcNow,
+                CreatedDate = DateTime.UtcNow,
+                LastModifiedDate = DateTime.UtcNow,
                 StripePaymentIntentId = paymentIntent.Id,
-                Status = "Confirmed" // Assuming direct confirmation for now
+                Status = "Confirmed", // Assuming direct confirmation for now
+                Customer = customer // Associate the customer with the booking
             };
 
             _dbContext.Bookings.Add(booking);
