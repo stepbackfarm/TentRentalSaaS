@@ -6,6 +6,10 @@ import { createBooking } from '../services/api';
 function BookingForm({ selectedDate }) {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [tentType, setTentType] = useState('Standard');
   const [numberOfTents, setNumberOfTents] = useState(1);
   const [specialRequests, setSpecialRequests] = useState('');
@@ -34,6 +38,10 @@ function BookingForm({ selectedDate }) {
           eventDate: selectedDate,
           customerName,
           customerEmail,
+          address,
+          city,
+          state,
+          zipCode,
           tentType,
           numberOfTents,
           specialRequests,
@@ -87,6 +95,50 @@ function BookingForm({ selectedDate }) {
           id="customerEmail"
           value={customerEmail}
           onChange={(e) => setCustomerEmail(e.target.value)}
+          required
+          className="p-2 rounded-md border border-gray-300 w-full"
+        />
+      </div>
+      <div>
+        <label htmlFor="address" className="block text-sm font-bold text-gray-300 mb-1">Address</label>
+        <input
+          type="text"
+          id="address"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          required
+          className="p-2 rounded-md border border-gray-300 w-full"
+        />
+      </div>
+      <div>
+        <label htmlFor="city" className="block text-sm font-bold text-gray-300 mb-1">City</label>
+        <input
+          type="text"
+          id="city"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          required
+          className="p-2 rounded-md border border-gray-300 w-full"
+        />
+      </div>
+      <div>
+        <label htmlFor="state" className="block text-sm font-bold text-gray-300 mb-1">State</label>
+        <input
+          type="text"
+          id="state"
+          value={state}
+          onChange={(e) => setState(e.target.value)}
+          required
+          className="p-2 rounded-md border border-gray-300 w-full"
+        />
+      </div>
+      <div>
+        <label htmlFor="zipCode" className="block text-sm font-bold text-gray-300 mb-1">Zip Code</label>
+        <input
+          type="text"
+          id="zipCode"
+          value={zipCode}
+          onChange={(e) => setZipCode(e.target.value)}
           required
           className="p-2 rounded-md border border-gray-300 w-full"
         />
