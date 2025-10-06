@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
+using TentRentalSaaS.Api.Helpers;
 
 namespace TentRentalSaaS.Api.Services
 {
@@ -10,11 +11,13 @@ namespace TentRentalSaaS.Api.Services
     {
         private readonly ApiDbContext _dbContext;
         private readonly IPaymentService _paymentService;
+        private readonly IGeocodingService _geocodingService;
 
-        public BookingService(ApiDbContext dbContext, IPaymentService paymentService)
+        public BookingService(ApiDbContext dbContext, IPaymentService paymentService, IGeocodingService geocodingService)
         {
             _dbContext = dbContext;
             _paymentService = paymentService;
+            _geocodingService = geocodingService;
         }
 
         public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
@@ -50,6 +53,11 @@ namespace TentRentalSaaS.Api.Services
                 };
             }
 
+            var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
+            var customerCoords = await _geocodingService.GetCoordinatesAsync($"{customer.Address}, {customer.City}, {customer.State} {customer.ZipCode}");
+            var distance = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
+            var deliveryFee = (decimal)distance * 2.0m;
+
             var booking = new Booking
             {
                 EventDate = bookingRequest.EventDate,
@@ -64,7 +72,7 @@ namespace TentRentalSaaS.Api.Services
                 Customer = customer, // Associate the customer with the booking
                 RentalFee = 400,
                 SecurityDeposit = 100,
-                DeliveryFee = 50 // Placeholder for delivery fee calculation
+                DeliveryFee = deliveryFee
             };
 
             _dbContext.Bookings.Add(booking);
@@ -84,6 +92,15 @@ namespace TentRentalSaaS.Api.Services
             };
 
             return bookingResponse;
+        }
+
+        public async Task<decimal> CalculateDeliveryFeeAsync(AddressDto address)
+        {
+            var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
+            var customerCoords = await _geocodingService.GetCoordinatesAsync($"{address.Address}, {address.City}, {address.State} {address.ZipCode}");
+            var distance = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
+            var deliveryFee = (decimal)distance * 2.0m;
+            return deliveryFee;
         }
     }
 }

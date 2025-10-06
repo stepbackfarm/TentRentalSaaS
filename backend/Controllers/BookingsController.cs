@@ -34,5 +34,12 @@ namespace TentRentalSaaS.Api.Controllers
             var createdBooking = await _bookingService.CreateBookingAsync(bookingRequest);
             return StatusCode(201, createdBooking);
         }
+
+        [HttpPost("delivery-fee")]
+        public async Task<ActionResult<decimal>> GetDeliveryFee([FromBody] AddressDto address)
+        {
+            var deliveryFee = await _bookingService.CalculateDeliveryFeeAsync(address);
+            return Ok(deliveryFee);
+        }
     }
 }

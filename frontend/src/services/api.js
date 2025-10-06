@@ -23,7 +23,16 @@ export const createBooking = async (bookingData) => {
     const response = await api.post('/bookings', bookingData);
     return response.data;
   } catch (error) {
-    console.error('Error creating booking:', error);
+    throw error;
+  }
+};
+
+export const getDeliveryFee = async (address) => {
+  try {
+    const response = await api.post('/bookings/delivery-fee', address);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching delivery fee:', error);
     throw error;
   }
 };
