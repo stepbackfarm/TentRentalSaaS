@@ -41,6 +41,10 @@ namespace TentRentalSaaS.Api.Services
                     FirstName = firstName,
                     LastName = lastName,
                     Email = bookingRequest.CustomerEmail,
+                    Address = bookingRequest.Address,
+                    City = bookingRequest.City,
+                    State = bookingRequest.State,
+                    ZipCode = bookingRequest.ZipCode,
                     CreatedDate = DateTime.UtcNow,
                     LastModifiedDate = DateTime.UtcNow
                 };
@@ -48,8 +52,6 @@ namespace TentRentalSaaS.Api.Services
 
             var booking = new Booking
             {
-                CustomerName = bookingRequest.CustomerName,
-                CustomerEmail = bookingRequest.CustomerEmail,
                 EventDate = bookingRequest.EventDate,
                 TentType = bookingRequest.TentType,
                 NumberOfTents = bookingRequest.NumberOfTents,
@@ -58,8 +60,11 @@ namespace TentRentalSaaS.Api.Services
                 CreatedDate = DateTime.UtcNow,
                 LastModifiedDate = DateTime.UtcNow,
                 StripePaymentIntentId = paymentIntent.Id,
-                Status = "Confirmed", // Assuming direct confirmation for now
-                Customer = customer // Associate the customer with the booking
+                Status = BookingStatus.Confirmed, // Assuming direct confirmation for now
+                Customer = customer, // Associate the customer with the booking
+                RentalFee = 400,
+                SecurityDeposit = 100,
+                DeliveryFee = 50 // Placeholder for delivery fee calculation
             };
 
             _dbContext.Bookings.Add(booking);
@@ -73,8 +78,8 @@ namespace TentRentalSaaS.Api.Services
                 Status = booking.Status,
                 TentType = booking.TentType,
                 NumberOfTents = booking.NumberOfTents,
-                CustomerName = booking.CustomerName,
-                CustomerEmail = booking.CustomerEmail,
+                CustomerName = customer.FirstName + " " + customer.LastName,
+                CustomerEmail = customer.Email,
                 StripePaymentIntentId = booking.StripePaymentIntentId
             };
 

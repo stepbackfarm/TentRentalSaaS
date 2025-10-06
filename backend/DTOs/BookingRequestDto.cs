@@ -13,6 +13,18 @@ namespace TentRentalSaaS.Api.DTOs
         public string CustomerEmail { get; set; } = string.Empty;
 
         [Required]
+        public string Address { get; set; } = string.Empty;
+
+        [Required]
+        public string City { get; set; } = string.Empty;
+
+        [Required]
+        public string State { get; set; } = string.Empty;
+
+        [Required]
+        public string ZipCode { get; set; } = string.Empty;
+
+        [Required]
         public DateTime EventDate { get; set; }
 
         [Required]
