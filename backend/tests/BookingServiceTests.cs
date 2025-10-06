@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Stripe;
 using TentRentalSaaS.Api.DTOs;
@@ -14,12 +15,26 @@ namespace TentRentalSaaS.Api.Tests
     public class BookingServiceTests
     {
         private readonly Mock<IPaymentService> _paymentServiceMock;
+        private readonly Mock<IGeocodingService> _geocodingServiceMock;
+        private readonly IConfiguration _configuration;
 
         public BookingServiceTests()
         {
             _paymentServiceMock = new Mock<IPaymentService>();
             _paymentServiceMock.Setup(p => p.CreatePaymentIntentAsync(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new PaymentIntent { Id = "pi_test_123" });
+
+            _geocodingServiceMock = new Mock<IGeocodingService>();
+            _geocodingServiceMock.Setup(g => g.GetCoordinatesAsync(It.IsAny<string>()))
+                .ReturnsAsync((39.9612, -86.1581));
+
+            var inMemorySettings = new Dictionary<string, string> {
+                {"GoogleMaps:ApiKey", "***REMOVED***"},
+            };
+
+            _configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
+                .Build();
         }
 
         private ApiDbContext GetDbContext()
@@ -35,7 +50,7 @@ namespace TentRentalSaaS.Api.Tests
         {
             // Arrange
             await using var dbContext = GetDbContext();
-            var bookingService = new BookingService(dbContext, _paymentServiceMock.Object);
+            var bookingService = new BookingService(dbContext, _paymentServiceMock.Object, _geocodingServiceMock.Object);
             var bookingRequest = new BookingRequestDto
             {
                 CustomerName = "John Doe",
@@ -62,7 +77,7 @@ namespace TentRentalSaaS.Api.Tests
             dbContext.Customers.Add(existingCustomer);
             await dbContext.SaveChangesAsync();
 
-            var bookingService = new BookingService(dbContext, _paymentServiceMock.Object);
+            var bookingService = new BookingService(dbContext, _paymentServiceMock.Object, _geocodingServiceMock.Object);
             var bookingRequest = new BookingRequestDto
             {
                 CustomerName = "Jane Doe",
@@ -85,7 +100,7 @@ namespace TentRentalSaaS.Api.Tests
         {
             // Arrange
             await using var dbContext = GetDbContext();
-            var bookingService = new BookingService(dbContext, _paymentServiceMock.Object);
+            var bookingService = new BookingService(dbContext, _paymentServiceMock.Object, _geocodingServiceMock.Object);
             var bookingRequest = new BookingRequestDto
             {
                 CustomerName = "Sam Smith",

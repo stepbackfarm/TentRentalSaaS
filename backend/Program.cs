@@ -30,6 +30,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
+builder.Services.AddScoped<IGeocodingService, GoogleMapsGeocodingService>();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>

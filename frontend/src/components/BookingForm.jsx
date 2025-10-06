@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { createBooking } from '../services/api';
+import { getDeliveryFee, createBooking } from '../services/api';
 
 function BookingForm({ selectedDate }) {
   const [customerName, setCustomerName] = useState('');
@@ -13,9 +13,25 @@ function BookingForm({ selectedDate }) {
   const [tentType, setTentType] = useState('Standard');
   const [numberOfTents, setNumberOfTents] = useState(1);
   const [specialRequests, setSpecialRequests] = useState('');
+  const [deliveryFee, setDeliveryFee] = useState(null);
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const calculateDeliveryFee = async () => {
+      if (address && city && state && zipCode) {
+        try {
+          const fee = await getDeliveryFee({ address, city, state, zipCode });
+          setDeliveryFee(fee);
+        } catch (error) {
+          console.error('Failed to calculate delivery fee:', error);
+          setDeliveryFee(null);
+        }
+      }
+    };
+    calculateDeliveryFee();
+  }, [address, city, state, zipCode]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -143,6 +159,11 @@ function BookingForm({ selectedDate }) {
           className="p-2 rounded-md border border-gray-300 w-full"
         />
       </div>
+      {deliveryFee !== null && (
+        <div className="text-white">
+          Delivery Fee: ${deliveryFee.toFixed(2)}
+        </div>
+      )}
       <div>
         <label htmlFor="tentType" className="block text-sm font-bold text-gray-300 mb-1">Tent Type</label>
         <select

@@ -6,5 +6,6 @@ namespace TentRentalSaaS.Api.Services
     public interface IBookingService
     {
         Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest);
+        Task<decimal> CalculateDeliveryFeeAsync(AddressDto address);
     }
 }
