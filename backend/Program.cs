@@ -4,6 +4,32 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Explicitly build configuration
+builder.Configuration.Sources.Clear();
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+Console.WriteLine($"Current Environment: {builder.Environment.EnvironmentName}");
+
+// --- BEGIN CONFIGURATION DUMP ---
+Console.WriteLine("--- Dumping all configuration key-values ---");
+foreach (var config in builder.Configuration.AsEnumerable().OrderBy(c => c.Key))
+{
+    var key = config.Key;
+    var value = config.Value;
+    if (key.IndexOf("password", StringComparison.OrdinalIgnoreCase) >= 0 ||
+        key.IndexOf("key", StringComparison.OrdinalIgnoreCase) >= 0 ||
+        key.IndexOf("secret", StringComparison.OrdinalIgnoreCase) >= 0)
+    {
+        value = "REDACTED";
+    }
+    Console.WriteLine($"{key} = {value}");
+}
+Console.WriteLine("--- End of configuration dump ---");
+// --- END CONFIGURATION DUMP ---
+
 // Add services to the container.
 
 // Build connection string from environment variables for production
@@ -46,6 +72,10 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
+
+// Configure to use PORT environment variable for Cloud Run
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 var app = builder.Build();
 

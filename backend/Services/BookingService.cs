@@ -5,6 +5,8 @@ using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
 using TentRentalSaaS.Api.Helpers;
 
+using Microsoft.Extensions.Logging;
+
 namespace TentRentalSaaS.Api.Services
 {
     public class BookingService : IBookingService
@@ -13,13 +15,15 @@ namespace TentRentalSaaS.Api.Services
         private readonly IPaymentService _paymentService;
         private readonly IGeocodingService _geocodingService;
         private readonly IEmailService _emailService;
+        private readonly ILogger<BookingService> _logger;
 
-        public BookingService(ApiDbContext dbContext, IPaymentService paymentService, IGeocodingService geocodingService, IEmailService emailService)
+        public BookingService(ApiDbContext dbContext, IPaymentService paymentService, IGeocodingService geocodingService, IEmailService emailService, ILogger<BookingService> logger)
         {
             _dbContext = dbContext;
             _paymentService = paymentService;
             _geocodingService = geocodingService;
             _emailService = emailService;
+            _logger = logger;
         }
 
         public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
@@ -106,7 +110,15 @@ namespace TentRentalSaaS.Api.Services
                 + "<h2>Contact Us</h2>"
                 + "<p>Have questions? Email us at contact@tentrentalsaas.com</p>";
 
-            await _emailService.SendEmailAsync(customer.Email, emailSubject, emailBody);
+            try
+            {
+                await _emailService.SendEmailAsync(customer.Email, emailSubject, emailBody);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send confirmation email.");
+                throw; // Re-throw the exception to stop the process
+            }
 
             var bookingResponse = new BookingResponseDto
             {
