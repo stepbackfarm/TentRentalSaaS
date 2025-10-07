@@ -6,6 +6,8 @@ import HomePage from "./pages/HomePage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import UIKitPage from "./pages/UIKitPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import FaqPage from "./pages/FaqPage";
+import GalleryPage from "./pages/GalleryPage";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +25,14 @@ const router = createBrowserRouter([
   {
     path: "/checkout",
     element: <CheckoutPage />,
+  },
+  {
+    path: "/faq",
+    element: <FaqPage />,
+  },
+  {
+    path: "/gallery",
+    element: <GalleryPage />,
   },
 ]);
 

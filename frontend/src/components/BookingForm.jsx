@@ -10,6 +10,11 @@ function BookingForm({ selectedDate }) {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [zipCode, setZipCode] = useState('');
+  const [eventAddress, setEventAddress] = useState('');
+  const [eventCity, setEventCity] = useState('');
+  const [eventState, setEventState] = useState('');
+  const [eventZipCode, setEventZipCode] = useState('');
+  const [isSameAddress, setIsSameAddress] = useState(true);
   const [tentType, setTentType] = useState('Standard');
   const [numberOfTents, setNumberOfTents] = useState(1);
   const [specialRequests, setSpecialRequests] = useState('');
@@ -20,18 +25,21 @@ function BookingForm({ selectedDate }) {
 
   useEffect(() => {
     const calculateDeliveryFee = async () => {
-      if (address && city && state && zipCode) {
+      const addressToUse = isSameAddress ? { address, city, state, zipCode } : { address: eventAddress, city: eventCity, state: eventState, zipCode: eventZipCode };
+      if (addressToUse.address && addressToUse.city && addressToUse.state && addressToUse.zipCode) {
         try {
-          const fee = await getDeliveryFee({ address, city, state, zipCode });
+          const fee = await getDeliveryFee(addressToUse);
           setDeliveryFee(fee);
         } catch (error) {
           console.error('Failed to calculate delivery fee:', error);
-          setDeliveryFee(null);
+          setDeliveryFee(25.00); // Set a default fee on error
         }
+      } else {
+        setDeliveryFee(null);
       }
     };
     calculateDeliveryFee();
-  }, [address, city, state, zipCode]);
+  }, [address, city, state, zipCode, eventAddress, eventCity, eventState, eventZipCode, isSameAddress]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -159,9 +167,69 @@ function BookingForm({ selectedDate }) {
           className="p-2 rounded-md border border-gray-300 w-full"
         />
       </div>
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id="sameAddress"
+          checked={isSameAddress}
+          onChange={(e) => setIsSameAddress(e.target.checked)}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        />
+        <label htmlFor="sameAddress" className="ml-2 block text-sm text-gray-300">Event address is the same as billing address</label>
+      </div>
+      {!isSameAddress && (
+        <>
+          <div>
+            <label htmlFor="eventAddress" className="block text-sm font-bold text-gray-300 mb-1">Event Address</label>
+            <input
+              type="text"
+              id="eventAddress"
+              value={eventAddress}
+              onChange={(e) => setEventAddress(e.target.value)}
+              required
+              className="p-2 rounded-md border border-gray-300 w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="eventCity" className="block text-sm font-bold text-gray-300 mb-1">Event City</label>
+            <input
+              type="text"
+              id="eventCity"
+              value={eventCity}
+              onChange={(e) => setEventCity(e.target.value)}
+              required
+              className="p-2 rounded-md border border-gray-300 w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="eventState" className="block text-sm font-bold text-gray-300 mb-1">Event State</label>
+            <input
+              type="text"
+              id="eventState"
+              value={eventState}
+              onChange={(e) => setEventState(e.target.value)}
+              required
+              className="p-2 rounded-md border border-gray-300 w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="eventZipCode" className="block text-sm font-bold text-gray-300 mb-1">Event Zip Code</label>
+            <input
+              type="text"
+              id="eventZipCode"
+              value={eventZipCode}
+              onChange={(e) => setEventZipCode(e.target.value)}
+              required
+              className="p-2 rounded-md border border-gray-300 w-full"
+            />
+          </div>
+        </>
+      )}
       {deliveryFee !== null && (
         <div className="text-white">
-          Delivery Fee: ${deliveryFee.toFixed(2)}
+          <p>Base Price: $250.00</p>
+          <p>Delivery Fee: ${deliveryFee.toFixed(2)}</p>
+          <p className="font-bold">Total: ${(250 + deliveryFee).toFixed(2)}</p>
         </div>
       )}
       <div>

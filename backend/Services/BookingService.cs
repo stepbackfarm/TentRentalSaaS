@@ -12,12 +12,14 @@ namespace TentRentalSaaS.Api.Services
         private readonly ApiDbContext _dbContext;
         private readonly IPaymentService _paymentService;
         private readonly IGeocodingService _geocodingService;
+        private readonly IEmailService _emailService;
 
-        public BookingService(ApiDbContext dbContext, IPaymentService paymentService, IGeocodingService geocodingService)
+        public BookingService(ApiDbContext dbContext, IPaymentService paymentService, IGeocodingService geocodingService, IEmailService emailService)
         {
             _dbContext = dbContext;
             _paymentService = paymentService;
             _geocodingService = geocodingService;
+            _emailService = emailService;
         }
 
         public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
@@ -90,6 +92,21 @@ namespace TentRentalSaaS.Api.Services
 
             _dbContext.Bookings.Add(booking);
             await _dbContext.SaveChangesAsync();
+
+            var emailSubject = "Your Tent Rental Booking is Confirmed!";
+            var emailBody = $"<h1>Booking Confirmed!</h1>"
+                + "<p>Your tent is booked. We\'ve sent a confirmation to your email.</p>"
+                + "<h2>What to Expect Next</h2>"
+                + "<ul>"
+                + "<li>You will receive a confirmation email shortly.</li>"
+                + "<li>We will contact you 2-3 days before your event to confirm setup details.</li>"
+                + "<li>Our team will arrive on the day of your event to set up the tent.</li>"
+                + "<li>After your event, we will return to take down the tent.</li>"
+                + "</ul>"
+                + "<h2>Contact Us</h2>"
+                + "<p>Have questions? Email us at contact@tentrentalsaas.com</p>";
+
+            await _emailService.SendEmailAsync(customer.Email, emailSubject, emailBody);
 
             var bookingResponse = new BookingResponseDto
             {
