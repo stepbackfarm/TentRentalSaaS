@@ -22,19 +22,10 @@ namespace TentRentalSaaS.Api.Services
 
         public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
         {
-            var paymentIntent = await _paymentService.CreatePaymentIntentAsync(
-                1000, // Example: $10.00
-                "usd",
-                bookingRequest.PaymentMethodId,
-                "https://localhost:3000/confirmation" // This should be your frontend confirmation URL
-            );
-
-            // Find existing customer or create a new one
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);
 
             if (customer == null)
             {
-                // A simple way to split name into first and last
                 var nameParts = bookingRequest.CustomerName.Split(' ', 2);
                 var firstName = nameParts.Length > 0 ? nameParts[0] : string.Empty;
                 var lastName = nameParts.Length > 1 ? nameParts[1] : string.Empty;
@@ -51,12 +42,33 @@ namespace TentRentalSaaS.Api.Services
                     CreatedDate = DateTime.UtcNow,
                     LastModifiedDate = DateTime.UtcNow
                 };
+                _dbContext.Customers.Add(customer);
             }
 
-            var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
-            var customerCoords = await _geocodingService.GetCoordinatesAsync($"{customer.Address}, {customer.City}, {customer.State} {customer.ZipCode}");
-            var distance = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
-            var deliveryFee = (decimal)distance * 2.0m;
+            decimal deliveryFee;
+            try
+            {
+                var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
+                var customerCoords = await _geocodingService.GetCoordinatesAsync($"{customer.Address}, {customer.City}, {customer.State} {customer.ZipCode}");
+                var distance = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
+                deliveryFee = (decimal)distance * 2.0m;
+            }
+            catch (Exception)
+            {
+                // Log the exception
+                deliveryFee = 25.00m; // Default delivery fee
+            }
+
+            var rentalFee = 400;
+            var securityDeposit = 100;
+            var totalPrice = rentalFee + securityDeposit + deliveryFee;
+
+            var paymentIntent = await _paymentService.CreatePaymentIntentAsync(
+                (long)totalPrice * 100, // Convert to cents
+                "usd",
+                bookingRequest.PaymentMethodId,
+                "https://localhost:3000/confirmation"
+            );
 
             var booking = new Booking
             {
@@ -68,17 +80,17 @@ namespace TentRentalSaaS.Api.Services
                 CreatedDate = DateTime.UtcNow,
                 LastModifiedDate = DateTime.UtcNow,
                 StripePaymentIntentId = paymentIntent.Id,
-                Status = BookingStatus.Confirmed, // Assuming direct confirmation for now
-                Customer = customer, // Associate the customer with the booking
-                RentalFee = 400,
-                SecurityDeposit = 100,
-                DeliveryFee = deliveryFee
+                Status = BookingStatus.Confirmed,
+                Customer = customer,
+                RentalFee = rentalFee,
+                SecurityDeposit = securityDeposit,
+                DeliveryFee = deliveryFee,
+                TotalPrice = totalPrice
             };
 
             _dbContext.Bookings.Add(booking);
             await _dbContext.SaveChangesAsync();
 
-            // Map the booking entity to the response DTO
             var bookingResponse = new BookingResponseDto
             {
                 Id = booking.Id,
@@ -96,11 +108,19 @@ namespace TentRentalSaaS.Api.Services
 
         public async Task<decimal> CalculateDeliveryFeeAsync(AddressDto address)
         {
-            var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
-            var customerCoords = await _geocodingService.GetCoordinatesAsync($"{address.Address}, {address.City}, {address.State} {address.ZipCode}");
-            var distance = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
-            var deliveryFee = (decimal)distance * 2.0m;
-            return deliveryFee;
+            try
+            {
+                var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
+                var customerCoords = await _geocodingService.GetCoordinatesAsync($"{address.Address}, {address.City}, {address.State} {address.ZipCode}");
+                var distance = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
+                var deliveryFee = (decimal)distance * 2.0m;
+                return deliveryFee;
+            }
+            catch (Exception)
+            {
+                // Log the exception
+                return 25.00m; // Default delivery fee
+            }
         }
     }
 }
