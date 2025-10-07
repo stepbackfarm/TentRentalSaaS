@@ -11,7 +11,17 @@ namespace TentRentalSaaS.Api.Services
 
         public GoogleMapsGeocodingService(IConfiguration configuration)
         {
-            _geocoder = new GoogleGeocoder(configuration["GoogleMaps:ApiKey"]);
+            // Try environment variable first, then configuration
+            var apiKey = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY") 
+                      ?? configuration["GoogleMaps:ApiKey"];
+            
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new InvalidOperationException(
+                    "Google Maps API key not found. Set GOOGLE_MAPS_API_KEY environment variable or GoogleMaps:ApiKey in configuration.");
+            }
+            
+            _geocoder = new GoogleGeocoder(apiKey);
         }
 
         public async Task<(double Latitude, double Longitude)> GetCoordinatesAsync(string address)
