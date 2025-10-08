@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { getDeliveryFee, createBooking } from '../services/api';
 
-function BookingForm({ selectedDate }) {
+function BookingForm({ startDate, endDate }) {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [address, setAddress] = useState('');
@@ -22,6 +22,9 @@ function BookingForm({ selectedDate }) {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
+
+  const rentalDays = Math.max(2, (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+  const rentalFee = 400 + (rentalDays > 2 ? (rentalDays - 2) * 100 : 0);
 
   useEffect(() => {
     const calculateDeliveryFee = async () => {
@@ -59,7 +62,8 @@ function BookingForm({ selectedDate }) {
       console.log('[PaymentMethod]', paymentMethod);
       try {
         await createBooking({
-          eventDate: selectedDate,
+          eventDate: startDate,
+          eventEndDate: endDate,
           customerName,
           customerEmail,
           address,
@@ -99,7 +103,7 @@ function BookingForm({ selectedDate }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <h2 className="text-lg font-semibold text-center text-white">
-        Booking for: {selectedDate ? selectedDate.toLocaleDateString() : 'N/A'}
+        Booking for: {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
       </h2>
       <div>
         <label htmlFor="customerName" className="block text-sm font-bold text-gray-300 mb-1">Name</label>
@@ -227,9 +231,9 @@ function BookingForm({ selectedDate }) {
       )}
       {deliveryFee !== null && (
         <div className="text-white">
-          <p>Base Price: $250.00</p>
+          <p>Base Price: ${rentalFee.toFixed(2)} ({rentalDays} days)</p>
           <p>Delivery Fee: ${deliveryFee.toFixed(2)}</p>
-          <p className="font-bold">Total: ${(250 + deliveryFee).toFixed(2)}</p>
+          <p className="font-bold">Total: ${(rentalFee + deliveryFee).toFixed(2)}</p>
         </div>
       )}
       <div>
@@ -276,7 +280,7 @@ function BookingForm({ selectedDate }) {
       </div>
       <button
         type="submit"
-        disabled={!stripe || !selectedDate}
+        disabled={!stripe || !startDate || !endDate}
         className="w-full button-primary font-bold py-2 px-4 rounded-md transition-colors duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed"
       >
         Book Now

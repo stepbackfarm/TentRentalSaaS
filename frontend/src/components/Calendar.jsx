@@ -4,7 +4,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 function Calendar({ onDateSelect }) {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [bookedDates, setBookedDates] = useState([]);
 
   useEffect(() => {
@@ -22,16 +23,23 @@ function Calendar({ onDateSelect }) {
     fetchBookedDates();
   }, []);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    onDateSelect(date);
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+    if (start && end) {
+      onDateSelect({ startDate: start, endDate: end });
+    }
   };
 
   return (
     <div className="flex flex-col items-center w-full">
       <DatePicker
-        selected={selectedDate}
+        selected={startDate}
         onChange={handleDateChange}
+        startDate={startDate}
+        endDate={endDate}
+        selectsRange
         filterDate={(date) => !bookedDates.some(d => d.getTime() === date.getTime())}
         minDate={new Date()}
         inline // Show the calendar inline
