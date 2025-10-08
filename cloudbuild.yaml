@@ -1,0 +1,25 @@
+steps:
+# 1. Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/$_AR_PROJECT_ID/cloud-run-source-deploy/$_SERVICE_NAME:$COMMIT_SHA', '.']
+  dir: 'src/backend'
+
+# 2. Push the container image to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/$_AR_PROJECT_ID/cloud-run-source-deploy/$_SERVICE_NAME:$COMMIT_SHA']
+
+# 3. Deploy to Cloud Run with all configuration
+- name: 'gcr.io/google-cloud-sdk/gcloud'
+  args:
+  - 'run'
+  - 'deploy'
+  - '$_SERVICE_NAME' # <-- Populated by trigger
+  - '--image=us-central1-docker.pkg.dev/$_AR_PROJECT_ID/cloud-run-source-deploy/$_SERVICE_NAME:$COMMIT_SHA'
+  - '--region=$_DEPLOY_REGION' # <-- Populated by trigger
+  - '--allow-unauthenticated'
+  - '--set-env-vars=ASPNETCORE_ENVIRONMENT=Development,SMTP_SERVER=smtp.gmail.com,SMTP_PORT=587,SMTP_FROM=info@stepbackfarm.com,SMTP_USERNAME=david@stepbackfarm.com'
+  - '--set-secrets=SMTP_PASSWORD=SMTP_PASSWORD:latest,GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest'
+
+# Store the image in Artifact Registry
+images:
+- 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/$_SERVICE_NAME:$COMMIT_SHA'
