@@ -2,7 +2,7 @@ steps:
 # 1. Build the container image
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'us-central1-docker.pkg.dev/$_AR_PROJECT_ID/cloud-run-source-deploy/$_SERVICE_NAME:$COMMIT_SHA', '.']
-  dir: 'src/backend'
+  dir: 'backend'
 
 # 2. Push the container image to Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
