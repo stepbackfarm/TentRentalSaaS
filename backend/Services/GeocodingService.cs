@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Geocoding.Google;
-using Microsoft.Extensions.Configuration;
+using System;
 
 namespace TentRentalSaaS.Api.Services
 {
@@ -9,16 +9,14 @@ namespace TentRentalSaaS.Api.Services
     {
         private readonly GoogleGeocoder _geocoder;
 
-        public GoogleMapsGeocodingService(IConfiguration configuration)
+        public GoogleMapsGeocodingService()
         {
-            // Try environment variable first, then configuration
-            var apiKey = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY") 
-                      ?? configuration["GoogleMaps:ApiKey"];
+            var apiKey = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
             
             if (string.IsNullOrEmpty(apiKey))
             {
                 throw new InvalidOperationException(
-                    "Google Maps API key not found. Set GOOGLE_MAPS_API_KEY environment variable or GoogleMaps:ApiKey in configuration.");
+                    "Google Maps API key not found. Set the GOOGLE_MAPS_API_KEY environment variable.");
             }
             
             _geocoder = new GoogleGeocoder(apiKey);

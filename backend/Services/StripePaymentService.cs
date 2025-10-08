@@ -1,17 +1,20 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Stripe;
+using System;
 
 namespace TentRentalSaaS.Api.Services
 {
     public class StripePaymentService : IPaymentService
     {
-        private readonly IConfiguration _configuration;
-
-        public StripePaymentService(IConfiguration configuration)
+        public StripePaymentService()
         {
-            _configuration = configuration;
-            StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
+            var apiKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new InvalidOperationException(
+                    "Stripe secret key not found. Set the STRIPE_SECRET_KEY environment variable.");
+            }
+            StripeConfiguration.ApiKey = apiKey;
         }
 
         public async Task<PaymentIntent> CreatePaymentIntentAsync(long amount, string currency, string paymentMethodId, string returnUrl)
