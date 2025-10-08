@@ -34,6 +34,20 @@ builder.Services.AddScoped<IGeocodingService, GoogleMapsGeocodingService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "Bearer";
+    options.DefaultChallengeScheme = "Bearer";
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = "https://accounts.google.com";
+    options.Audience = Environment.GetEnvironmentVariable("SERVICE_URL");
+    options.RequireHttpsMetadata = true;
+});
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
@@ -69,6 +83,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 var summaries = new[]

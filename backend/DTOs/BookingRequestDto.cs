@@ -28,6 +28,9 @@ namespace TentRentalSaaS.Api.DTOs
         public DateTime EventDate { get; set; }
 
         [Required]
+        public DateTime EventEndDate { get; set; }
+
+        [Required]
         [MinLength(1)]
         public string TentType { get; set; } = string.Empty;
 

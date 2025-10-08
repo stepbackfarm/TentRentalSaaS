@@ -9,6 +9,7 @@ namespace TentRentalSaaS.Api.Models
         public Guid Id { get; set; }
         public Guid CustomerId { get; set; }
         public DateTime EventDate { get; set; }
+        public DateTime EventEndDate { get; set; }
         public DateTime BookingDate { get; set; }
         public string? StripePaymentIntentId { get; set; }
         public string EventLocation { get; set; } = string.Empty;

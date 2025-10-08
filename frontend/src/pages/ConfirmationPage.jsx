@@ -52,7 +52,7 @@ END:VCALENDAR`;
 
         <div className="text-center my-6">
           <h2 className="text-xl font-bold text-blue-400 mb-3">Contact Us</h2>
-          <p className="text-gray-300">Have questions? Email us at <a href="mailto:contact@tentrentalsaas.com" className="text-blue-400 hover:underline">contact@tentrentalsaas.com</a></p>
+          <p className="text-gray-300">Have questions? Email us at <a href="mailto:info@stepbackfarm.com" className="text-blue-400 hover:underline">info@stepbackfarm.com</a></p>
         </div>
 
         <div className="my-6">

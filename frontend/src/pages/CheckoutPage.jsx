@@ -8,17 +8,17 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 function CheckoutPage() {
   const location = useLocation();
-  const selectedDate = location.state?.selectedDate;
+  const { startDate, endDate } = location.state || {};
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 sm:p-8">
       <div className="w-full max-w-xl bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-400 mb-6 sm:mb-8">Confirm Your Booking</h1>
         <Elements stripe={stripePromise}>
-          {selectedDate ? (
-            <BookingForm selectedDate={new Date(selectedDate)} />
+          {startDate && endDate ? (
+            <BookingForm startDate={new Date(startDate)} endDate={new Date(endDate)} />
           ) : (
-            <p className="text-center text-red-400">No date selected. Please go back and select a date.</p>
+            <p className="text-center text-red-400">No date range selected. Please go back and select a date range.</p>
           )}
         </Elements>
       </div>

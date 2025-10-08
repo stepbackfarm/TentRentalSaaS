@@ -5,8 +5,8 @@ import Calendar from '../components/Calendar';
 function HomePage() {
   const navigate = useNavigate();
 
-  const handleDateSelect = (date) => {
-    navigate('/checkout', { state: { selectedDate: date.toISOString() } });
+  const handleDateSelect = (dateRange) => {
+    navigate('/checkout', { state: { startDate: dateRange.startDate.toISOString(), endDate: dateRange.endDate.toISOString() } });
   };
 
   return (

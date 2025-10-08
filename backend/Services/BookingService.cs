@@ -65,7 +65,12 @@ namespace TentRentalSaaS.Api.Services
                 deliveryFee = 25.00m; // Default delivery fee
             }
 
-            var rentalFee = 400;
+            var rentalDays = (bookingRequest.EventEndDate.Date - bookingRequest.EventDate.Date).Days;
+            if (rentalDays < 2) {
+                rentalDays = 2;
+            }
+
+            var rentalFee = 400 + (rentalDays > 2 ? (rentalDays - 2) * 100 : 0);
             var securityDeposit = 100;
             var totalPrice = rentalFee + securityDeposit + deliveryFee;
 
@@ -79,6 +84,7 @@ namespace TentRentalSaaS.Api.Services
             var booking = new Booking
             {
                 EventDate = bookingRequest.EventDate,
+                EventEndDate = bookingRequest.EventEndDate,
                 TentType = bookingRequest.TentType,
                 NumberOfTents = bookingRequest.NumberOfTents,
                 SpecialRequests = bookingRequest.SpecialRequests,
@@ -108,7 +114,7 @@ namespace TentRentalSaaS.Api.Services
                 + "<li>After your event, we will return to take down the tent.</li>"
                 + "</ul>"
                 + "<h2>Contact Us</h2>"
-                + "<p>Have questions? Email us at contact@tentrentalsaas.com</p>";
+                + "<p>Have questions? Email us at info@stepbackfarm.com</p>";
 
             try
             {
@@ -150,6 +156,14 @@ namespace TentRentalSaaS.Api.Services
                 // Log the exception
                 return 25.00m; // Default delivery fee
             }
+        }
+
+        public async Task<IEnumerable<Booking>> GetBookingsForDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _dbContext.Bookings
+                .Include(b => b.Customer)
+                .Where(b => startDate <= b.EventEndDate && endDate >= b.EventDate)
+                .ToListAsync();
         }
     }
 }
