@@ -20,7 +20,7 @@ steps:
   - '--no-traffic' # Don't route traffic immediately
   - '--allow-unauthenticated'
   - '--set-env-vars=ASPNETCORE_ENVIRONMENT=Development,SMTP_SERVER=smtp.gmail.com,SMTP_PORT=587,SMTP_FROM=info@stepbackfarm.com,SMTP_USERNAME=david@stepbackfarm.com'
-  - '--set-secrets=SMTP_PASSWORD=SMTP_PASSWORD:latest,GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest'
+  - '--set-secrets=SMTP_PASSWORD=GOOGLE_SMTP_APP_PASSWORD:latest,GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest'
 
 # 4. Route 100% of traffic to the new revision
 - name: 'gcr.io/cloud-builders/gcloud'
