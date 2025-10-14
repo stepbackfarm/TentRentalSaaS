@@ -18,7 +18,6 @@ RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 8080
-ENV ASPNETCORE_ENVIRONMENT=Production
 
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "TentRentalSaaS.Api.dll"]
