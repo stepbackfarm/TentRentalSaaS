@@ -16,7 +16,7 @@ steps:
   - '$_SERVICE_NAME'
   - '--image=us-central1-docker.pkg.dev/$_AR_PROJECT_ID/cloud-run-source-deploy/$_SERVICE_NAME:$COMMIT_SHA'
   - '--region=$_DEPLOY_REGION'
-  - '--revision-suffix=$COMMIT_SHA' # Tag the revision with the commit SHA
+  - '--tag=$COMMIT_SHA' # Tag the revision with the commit SHA
   - '--no-traffic' # Don't route traffic immediately
   - '--allow-unauthenticated'
   - '--set-env-vars=ASPNETCORE_ENVIRONMENT=Development,SMTP_SERVER=smtp.gmail.com,SMTP_PORT=587,SMTP_FROM=info@stepbackfarm.com,SMTP_USERNAME=david@stepbackfarm.com,DB_HOST=172.22.208.3,DB_NAME=tent-rental-db,DB_USER=postgres'
@@ -29,7 +29,7 @@ steps:
   - 'services'
   - 'update-traffic'
   - '$_SERVICE_NAME'
-  - '--to-revisions=$_SERVICE_NAME-$COMMIT_SHA=100' # Route to the specific revision
+  - '--to-tags=$COMMIT_SHA=100' # Route to the specific revision by tag
   - '--region=$_DEPLOY_REGION'
 
 # Store the image in Artifact Registry
