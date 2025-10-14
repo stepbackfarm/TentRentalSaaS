@@ -19,7 +19,7 @@ steps:
   - '--tag=g-$SHORT_SHA' # Tag the revision with the short commit SHA
   - '--no-traffic' # Don't route traffic immediately
   - '--allow-unauthenticated'
-  - '--set-env-vars=ASPNETCORE_ENVIRONMENT=Development,SMTP_SERVER=smtp.gmail.com,SMTP_PORT=587,SMTP_FROM=info@stepbackfarm.com,SMTP_USERNAME=david@stepbackfarm.com,DB_HOST=172.22.208.3,DB_NAME=tent-rental-db,DB_USER=postgres'
+  - '--set-env-vars=ASPNETCORE_ENVIRONMENT=Production,SMTP_SERVER=smtp.gmail.com,SMTP_PORT=587,SMTP_FROM=info@stepbackfarm.com,SMTP_USERNAME=david@stepbackfarm.com,DB_HOST=172.22.208.3,DB_NAME=tent-rental-db,DB_USER=postgres'
   - '--set-secrets=DB_PASSWORD=DB_ADMIN_PASSWORD:latest,SMTP_PASSWORD=GOOGLE_SMTP_APP_PASSWORD:latest,GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest'
 
 # 4. Route 100% of traffic to the new revision
