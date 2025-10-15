@@ -8,6 +8,9 @@ import UIKitPage from "./pages/UIKitPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import FaqPage from "./pages/FaqPage";
 import GalleryPage from "./pages/GalleryPage";
+import LoginPage from "./pages/LoginPage";
+import PortalLoginPage from "./pages/PortalLoginPage";
+import PortalPage from "./pages/PortalPage";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +36,18 @@ const router = createBrowserRouter([
   {
     path: "/gallery",
     element: <GalleryPage />,
+  },
+  {
+    path: "/portal/login-request",
+    element: <LoginPage />,
+  },
+  {
+    path: "/portal/login",
+    element: <PortalLoginPage />,
+  },
+  {
+    path: "/portal",
+    element: <PortalPage />,
   },
 ]);
 
