@@ -26,7 +26,7 @@ namespace TentRentalSaaS.Api.Tests
                 return;
             }
 
-            var geocodingService = new GoogleMapsGeocodingService(_configuration);
+            var geocodingService = new GoogleMapsGeocodingService();
             var (latitude, longitude) = await geocodingService.GetCoordinatesAsync("1600 Amphitheatre Parkway, Mountain View, CA");
 
             Assert.InRange(latitude, 37.4, 37.5);

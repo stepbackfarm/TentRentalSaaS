@@ -21,11 +21,10 @@ namespace TentRentalSaaS.Api.Controllers
         }
 
         [HttpGet("availability")]
-        public IActionResult GetAvailability([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        public async Task<IActionResult> GetAvailability([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            // Service call to get booked dates will be implemented here.
-            // For now, return an empty list.
-            return Ok(new List<DateTime>());
+            var unavailableDates = await _bookingService.GetAvailabilityAsync(startDate, endDate);
+            return Ok(unavailableDates);
         }
 
         [HttpPost]

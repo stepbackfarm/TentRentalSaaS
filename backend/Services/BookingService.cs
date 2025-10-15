@@ -26,6 +26,24 @@ namespace TentRentalSaaS.Api.Services
             _logger = logger;
         }
 
+        public async Task<IEnumerable<DateTime>> GetAvailabilityAsync(DateTime startDate, DateTime endDate)
+        {
+            var overlappingBookings = await _dbContext.Bookings
+                .Where(b => b.Status == BookingStatus.Confirmed && b.EventDate < endDate && b.EventEndDate > startDate)
+                .ToListAsync();
+
+            var unavailableDates = new List<DateTime>();
+            foreach (var booking in overlappingBookings)
+            {
+                for (var date = booking.EventDate.Date; date <= booking.EventEndDate.Date; date = date.AddDays(1))
+                {
+                    unavailableDates.Add(date);
+                }
+            }
+
+            return unavailableDates.Distinct();
+        }
+
         public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
         {
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);
