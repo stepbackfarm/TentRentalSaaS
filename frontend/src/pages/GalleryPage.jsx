@@ -2,7 +2,7 @@ import React from 'react';
 
 function GalleryPage() {
   const images = [
-    "https://via.placeholder.com/400x300.png?text=Tent+at+a+Wedding",
+    "/tent-with-dimensions.jpg",
     "https://via.placeholder.com/400x300.png?text=Tent+at+a+Birthday+Party",
     "https://via.placeholder.com/400x300.png?text=Tent+at+a+Corporate+Event",
     "https://via.placeholder.com/400x300.png?text=Tent+at+a+Family+Reunion",
