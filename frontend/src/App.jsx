@@ -12,43 +12,50 @@ import LoginPage from "./pages/LoginPage";
 import PortalLoginPage from "./pages/PortalLoginPage";
 import PortalPage from "./pages/PortalPage";
 
+import MainLayout from "./layouts/MainLayout";
+
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <HomePage />,
-  },
-  {
-    path: "/confirmation",
-    element: <ConfirmationPage />,
-  },
-  {
-    path: "/uikit",
-    element: <UIKitPage />,
-  },
-  {
-    path: "/checkout",
-    element: <CheckoutPage />,
-  },
-  {
-    path: "/faq",
-    element: <FaqPage />,
-  },
-  {
-    path: "/gallery",
-    element: <GalleryPage />,
-  },
-  {
-    path: "/portal/login-request",
-    element: <LoginPage />,
-  },
-  {
-    path: "/portal/login",
-    element: <PortalLoginPage />,
-  },
-  {
-    path: "/portal",
-    element: <PortalPage />,
-  },
+    element: <MainLayout />,
+    children: [
+      {
+        path: "/",
+        element: <HomePage />,
+      },
+      {
+        path: "/confirmation",
+        element: <ConfirmationPage />,
+      },
+      {
+        path: "/uikit",
+        element: <UIKitPage />,
+      },
+      {
+        path: "/checkout",
+        element: <CheckoutPage />,
+      },
+      {
+        path: "/faq",
+        element: <FaqPage />,
+      },
+      {
+        path: "/gallery",
+        element: <GalleryPage />,
+      },
+      {
+        path: "/portal/login-request",
+        element: <LoginPage />,
+      },
+      {
+        path: "/portal/login",
+        element: <PortalLoginPage />,
+      },
+      {
+        path: "/portal",
+        element: <PortalPage />,
+      },
+    ]
+  }
 ]);
 
 function App() {
