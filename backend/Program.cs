@@ -32,6 +32,7 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 builder.Services.AddScoped<IGeocodingService, GoogleMapsGeocodingService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAuthentication(options =>
