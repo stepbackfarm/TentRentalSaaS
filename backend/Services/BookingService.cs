@@ -49,6 +49,8 @@ namespace TentRentalSaaS.Api.Services
 
         public async Task<QuoteResponseDto> GetQuoteAsync(QuoteRequestDto quoteRequest)
         {
+            _logger.LogInformation("GetQuoteAsync called with StartDate: {StartDate}, EndDate: {EndDate}", quoteRequest.StartDate, quoteRequest.EndDate);
+
             decimal deliveryFee;
             try
             {
@@ -61,6 +63,7 @@ namespace TentRentalSaaS.Api.Services
             }
 
             var rentalDays = (quoteRequest.EndDate.Date - quoteRequest.StartDate.Date).Days;
+            _logger.LogInformation("GetQuoteAsync calculated rentalDays: {RentalDays}", rentalDays);
             if (rentalDays < 2) {
                 rentalDays = 2;
             }
@@ -81,6 +84,8 @@ namespace TentRentalSaaS.Api.Services
 
         public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
         {
+            _logger.LogInformation("CreateBookingAsync called with EventDate: {EventDate}, EventEndDate: {EventEndDate}", bookingRequest.EventDate, bookingRequest.EventEndDate);
+
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);
 
             if (customer == null)
@@ -119,6 +124,7 @@ namespace TentRentalSaaS.Api.Services
             }
 
             var rentalDays = (bookingRequest.EventEndDate.Date - bookingRequest.EventDate.Date).Days;
+            _logger.LogInformation("CreateBookingAsync calculated rentalDays: {RentalDays}", rentalDays);
             if (rentalDays < 2) {
                 rentalDays = 2;
             }
