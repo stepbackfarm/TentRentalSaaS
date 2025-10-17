@@ -73,9 +73,14 @@ namespace TentRentalSaaS.Api.Services
                 deliveryFee = 25.00m; // Default delivery fee
             }
 
-            var rentalFee = 400 + (rentalDays > 2 ? (rentalDays - 2) * 100 : 0);
-            var securityDeposit = 100;
+            // Use decimal math throughout to avoid precision issues
+            var rentalFee = 400m + (rentalDays > 2 ? (rentalDays - 2) * 100m : 0m);
+            var securityDeposit = 100m;
             var totalPrice = rentalFee + securityDeposit + deliveryFee;
+
+            // Log all calculated values for debugging
+            _logger.LogInformation("Quote calculation: rentalDays={RentalDays}, rentalFee={RentalFee:C}, deliveryFee={DeliveryFee:C}, securityDeposit={SecurityDeposit:C}, totalPrice={TotalPrice:C}", 
+                rentalDays, rentalFee, deliveryFee, securityDeposit, totalPrice);
 
             return new QuoteResponseDto
             {
@@ -123,8 +128,12 @@ namespace TentRentalSaaS.Api.Services
             };
             var quote = await GetQuoteAsync(quoteRequest);
 
+            // Safe decimal to cents conversion for Stripe
+            var amountInCents = Convert.ToInt64(Math.Round(quote.TotalPrice * 100m, 0, MidpointRounding.AwayFromZero));
+            _logger.LogInformation("Charging Stripe: totalPrice={TotalPrice:C}, amountInCents={AmountInCents}", quote.TotalPrice, amountInCents);
+
             var paymentIntent = await _paymentService.CreatePaymentIntentAsync(
-                (long)quote.TotalPrice * 100, // Convert to cents
+                amountInCents,
                 "usd",
                 bookingRequest.PaymentMethodId,
                 "https://localhost:3000/confirmation"
@@ -183,8 +192,18 @@ namespace TentRentalSaaS.Api.Services
                 var adminBody = $"<h1>New Booking Received</h1>"
                     + $"<p><strong>Customer:</strong> {customer.FirstName} {customer.LastName}</p>"
                     + $"<p><strong>Email:</strong> {customer.Email}</p>"
-                    + $"<p><strong>Event Date:</strong> {booking.EventDate:D}</p>"
-                    + $"<p><strong>Total Price:</strong> {booking.TotalPrice:C}</p>";
+                    + $"<p><strong>Event Date:</strong> {booking.EventDate:D} - {booking.EventEndDate:D}</p>"
+                    + $"<p><strong>Tent Type:</strong> {booking.TentType}</p>"
+                    + $"<p><strong>Number of Tents:</strong> {booking.NumberOfTents}</p>"
+                    + $"<h2>Pricing Breakdown</h2>"
+                    + $"<ul>"
+                    + $"<li><strong>Rental Fee ({quote.RentalDays} days):</strong> {booking.RentalFee:C}</li>"
+                    + $"<li><strong>Delivery Fee:</strong> {booking.DeliveryFee:C}</li>"
+                    + $"<li><strong>Security Deposit:</strong> {booking.SecurityDeposit:C}</li>"
+                    + $"</ul>"
+                    + $"<p><strong>Total Price:</strong> {booking.TotalPrice:C}</p>"
+                    + $"<p><strong>Stripe Charge:</strong> {amountInCents / 100m:C} ({amountInCents} cents)</p>"
+                    + $"<p><strong>Stripe Payment Intent ID:</strong> {booking.StripePaymentIntentId}</p>";
                 await _emailService.SendEmailAsync(adminEmail, adminSubject, adminBody);
             }
             catch (Exception ex)
@@ -213,14 +232,40 @@ namespace TentRentalSaaS.Api.Services
             try
             {
                 var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
-                var customerCoords = await _geocodingService.GetCoordinatesAsync($"{address.Address}, {address.City}, {address.State} {address.ZipCode}");
-                var distance = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
-                var deliveryFee = (decimal)distance * 2.0m;
+                _logger.LogInformation("Darlington coordinates: Lat={Lat}, Lon={Lon}", darlingtonCoords.Latitude, darlingtonCoords.Longitude);
+                
+                var fullCustomerAddress = $"{address.Address}, {address.City}, {address.State} {address.ZipCode}";
+                var customerCoords = await _geocodingService.GetCoordinatesAsync(fullCustomerAddress);
+                _logger.LogInformation("Customer '{Address}' coordinates: Lat={Lat}, Lon={Lon}", fullCustomerAddress, customerCoords.Latitude, customerCoords.Longitude);
+                
+                // DistanceCalculator returns miles (verified by EarthRadiusMiles = 3959)
+                var distanceInMiles = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
+                _logger.LogInformation("Raw distance from DistanceCalculator: {Distance} miles", distanceInMiles);
+                
+                // Business rule: $2.00 per mile delivery fee with minimum charge logic
+                const decimal ratePerMile = 2.00m;
+                const decimal baseFee = 0.00m; // No base fee currently
+                const decimal minFee = 5.00m; // Minimum delivery fee
+                
+                var calculatedFee = baseFee + ((decimal)distanceInMiles * ratePerMile);
+                var deliveryFee = Math.Max(calculatedFee, minFee);
+                deliveryFee = Math.Round(deliveryFee, 2, MidpointRounding.AwayFromZero);
+                
+                _logger.LogInformation("Delivery fee calculation: distanceInMiles={Distance:F3}, ratePerMile={Rate:C}, calculatedFee={CalculatedFee:C}, finalFee={FinalFee:C}", 
+                    distanceInMiles, ratePerMile, calculatedFee, deliveryFee);
+                
+                // Sanity check - if delivery fee is unreasonably high, log error and use default
+                if (deliveryFee > 500m)
+                {
+                    _logger.LogError("DELIVERY FEE ANOMALY DETECTED: fee={Fee:C} is too high for distance={Distance} miles. Using default fee.", deliveryFee, distanceInMiles);
+                    return 25.00m;
+                }
+                
                 return deliveryFee;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log the exception
+                _logger.LogError(ex, "Failed to calculate delivery fee for address: {Address}", $"{address.Address}, {address.City}, {address.State} {address.ZipCode}");
                 return 25.00m; // Default delivery fee
             }
         }
