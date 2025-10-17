@@ -5,6 +5,7 @@ using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
 using TentRentalSaaS.Api.Helpers;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace TentRentalSaaS.Api.Services
@@ -16,14 +17,16 @@ namespace TentRentalSaaS.Api.Services
         private readonly IGeocodingService _geocodingService;
         private readonly IEmailService _emailService;
         private readonly ILogger<BookingService> _logger;
+        private readonly IConfiguration _configuration;
 
-        public BookingService(ApiDbContext dbContext, IPaymentService paymentService, IGeocodingService geocodingService, IEmailService emailService, ILogger<BookingService> logger)
+        public BookingService(ApiDbContext dbContext, IPaymentService paymentService, IGeocodingService geocodingService, IEmailService emailService, ILogger<BookingService> logger, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _paymentService = paymentService;
             _geocodingService = geocodingService;
             _emailService = emailService;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public async Task<IEnumerable<DateTime>> GetAvailabilityAsync(DateTime startDate, DateTime endDate)
@@ -142,6 +145,24 @@ namespace TentRentalSaaS.Api.Services
             {
                 _logger.LogError(ex, "Failed to send confirmation email.");
                 throw; // Re-throw the exception to stop the process
+            }
+
+            // Send a notification to the admin
+            try
+            {
+                var adminEmail = _configuration["ADMIN_EMAIL"] ?? "david@stepbackfarm.com";
+                var adminSubject = $"New Tent Rental Booking: {customer.FirstName} {customer.LastName}";
+                var adminBody = $"<h1>New Booking Received</h1>"
+                    + $"<p><strong>Customer:</strong> {customer.FirstName} {customer.LastName}</p>"
+                    + $"<p><strong>Email:</strong> {customer.Email}</p>"
+                    + $"<p><strong>Event Date:</strong> {booking.EventDate:D}</p>"
+                    + $"<p><strong>Total Price:</strong> {booking.TotalPrice:C}</p>";
+                await _emailService.SendEmailAsync(adminEmail, adminSubject, adminBody);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send admin notification email.");
+                // Do not re-throw; failing to send the admin email should not fail the customer's booking.
             }
 
             var bookingResponse = new BookingResponseDto
