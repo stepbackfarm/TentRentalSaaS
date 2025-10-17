@@ -45,6 +45,3 @@ export const getQuote = async (quoteRequest) => {
     throw error;
   }
 };
-    throw error;
-  }
-};
