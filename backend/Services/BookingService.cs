@@ -58,6 +58,9 @@ namespace TentRentalSaaS.Api.Services
 
             var rentalDays = dateDifference.Days;
             _logger.LogInformation("GetQuoteAsync calculated rentalDays: {RentalDays}", rentalDays);
+            if (rentalDays < 2) {
+                rentalDays = 2;
+            }
 
             decimal deliveryFee;
             try
@@ -68,12 +71,6 @@ namespace TentRentalSaaS.Api.Services
             {
                 _logger.LogError(ex, "Failed to calculate delivery fee for quote.");
                 deliveryFee = 25.00m; // Default delivery fee
-            }
-
-            var rentalDays = (quoteRequest.EndDate.Date - quoteRequest.StartDate.Date).Days;
-            _logger.LogInformation("GetQuoteAsync calculated rentalDays: {RentalDays}", rentalDays);
-            if (rentalDays < 2) {
-                rentalDays = 2;
             }
 
             var rentalFee = 400 + (rentalDays > 2 ? (rentalDays - 2) * 100 : 0);
