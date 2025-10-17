@@ -9,5 +9,6 @@ namespace TentRentalSaaS.Api.Services
         Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest);
         Task<decimal> CalculateDeliveryFeeAsync(AddressDto address);
         Task<IEnumerable<Booking>> GetBookingsForDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<QuoteResponseDto> GetQuoteAsync(QuoteRequestDto quoteRequest);
     }
 }
