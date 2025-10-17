@@ -88,7 +88,7 @@ function BookingForm({ startDate, endDate }) {
     style: {
       base: {
         color: '#32325d',
-        fontFamily: ''Arial, sans-serif'',
+        fontFamily: 'Arial, sans-serif',
         fontSmoothing: 'antialiased',
         fontSize: '16px',
         '::placeholder': {
