@@ -49,7 +49,15 @@ namespace TentRentalSaaS.Api.Services
 
         public async Task<QuoteResponseDto> GetQuoteAsync(QuoteRequestDto quoteRequest)
         {
-            _logger.LogInformation("GetQuoteAsync called with StartDate: {StartDate}, EndDate: {EndDate}", quoteRequest.StartDate, quoteRequest.EndDate);
+            _logger.LogInformation("--- GetQuoteAsync START ---");
+            _logger.LogInformation("RAW StartDate: {StartDate}, Kind: {StartKind}", quoteRequest.StartDate, quoteRequest.StartDate.Kind);
+            _logger.LogInformation("RAW EndDate: {EndDate}, Kind: {EndKind}", quoteRequest.EndDate, quoteRequest.EndDate.Kind);
+
+            var dateDifference = quoteRequest.EndDate.Date - quoteRequest.StartDate.Date;
+            _logger.LogInformation("DateDifference TimeSpan: {TimeSpan}", dateDifference);
+
+            var rentalDays = dateDifference.Days;
+            _logger.LogInformation("GetQuoteAsync calculated rentalDays: {RentalDays}", rentalDays);
 
             decimal deliveryFee;
             try
