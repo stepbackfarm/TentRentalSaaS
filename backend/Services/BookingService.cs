@@ -109,32 +109,17 @@ namespace TentRentalSaaS.Api.Services
                 _dbContext.Customers.Add(customer);
             }
 
-            decimal deliveryFee;
-            try
+            // Create a quote request from the booking request to get the official price
+            var quoteRequest = new QuoteRequestDto
             {
-                var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
-                var customerCoords = await _geocodingService.GetCoordinatesAsync($"{customer.Address}, {customer.City}, {customer.State} {customer.ZipCode}");
-                var distance = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
-                deliveryFee = (decimal)distance * 2.0m;
-            }
-            catch (Exception)
-            {
-                // Log the exception
-                deliveryFee = 25.00m; // Default delivery fee
-            }
-
-            var rentalDays = (bookingRequest.EventEndDate.Date - bookingRequest.EventDate.Date).Days;
-            _logger.LogInformation("CreateBookingAsync calculated rentalDays: {RentalDays}", rentalDays);
-            if (rentalDays < 2) {
-                rentalDays = 2;
-            }
-
-            var rentalFee = 400 + (rentalDays > 2 ? (rentalDays - 2) * 100 : 0);
-            var securityDeposit = 100;
-            var totalPrice = rentalFee + securityDeposit + deliveryFee;
+                StartDate = bookingRequest.EventDate,
+                EndDate = bookingRequest.EventEndDate,
+                Address = new AddressDto { Address = customer.Address, City = customer.City, State = customer.State, ZipCode = customer.ZipCode }
+            };
+            var quote = await GetQuoteAsync(quoteRequest);
 
             var paymentIntent = await _paymentService.CreatePaymentIntentAsync(
-                (long)totalPrice * 100, // Convert to cents
+                (long)quote.TotalPrice * 100, // Convert to cents
                 "usd",
                 bookingRequest.PaymentMethodId,
                 "https://localhost:3000/confirmation"
@@ -153,10 +138,10 @@ namespace TentRentalSaaS.Api.Services
                 StripePaymentIntentId = paymentIntent.Id,
                 Status = BookingStatus.Confirmed,
                 Customer = customer,
-                RentalFee = rentalFee,
-                SecurityDeposit = securityDeposit,
-                DeliveryFee = deliveryFee,
-                TotalPrice = totalPrice
+                RentalFee = quote.RentalFee,
+                SecurityDeposit = quote.SecurityDeposit,
+                DeliveryFee = quote.DeliveryFee,
+                TotalPrice = quote.TotalPrice
             };
 
             _dbContext.Bookings.Add(booking);
