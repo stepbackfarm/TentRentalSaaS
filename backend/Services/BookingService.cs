@@ -47,6 +47,38 @@ namespace TentRentalSaaS.Api.Services
             return unavailableDates.Distinct();
         }
 
+        public async Task<QuoteResponseDto> GetQuoteAsync(QuoteRequestDto quoteRequest)
+        {
+            decimal deliveryFee;
+            try
+            {
+                deliveryFee = await CalculateDeliveryFeeAsync(quoteRequest.Address);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to calculate delivery fee for quote.");
+                deliveryFee = 25.00m; // Default delivery fee
+            }
+
+            var rentalDays = (quoteRequest.EndDate.Date - quoteRequest.StartDate.Date).Days;
+            if (rentalDays < 2) {
+                rentalDays = 2;
+            }
+
+            var rentalFee = 400 + (rentalDays > 2 ? (rentalDays - 2) * 100 : 0);
+            var securityDeposit = 100;
+            var totalPrice = rentalFee + securityDeposit + deliveryFee;
+
+            return new QuoteResponseDto
+            {
+                RentalFee = rentalFee,
+                DeliveryFee = deliveryFee,
+                SecurityDeposit = securityDeposit,
+                TotalPrice = totalPrice,
+                RentalDays = rentalDays
+            };
+        }
+
         public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
         {
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);

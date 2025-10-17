@@ -27,6 +27,13 @@ namespace TentRentalSaaS.Api.Controllers
             return Ok(unavailableDates);
         }
 
+        [HttpPost("quote")]
+        public async Task<ActionResult<QuoteResponseDto>> GetQuote([FromBody] QuoteRequestDto quoteRequest)
+        {
+            var quote = await _bookingService.GetQuoteAsync(quoteRequest);
+            return Ok(quote);
+        }
+
         [HttpPost]
         public async Task<ActionResult<BookingResponseDto>> CreateBooking([FromBody] BookingRequestDto bookingRequest)
         {
