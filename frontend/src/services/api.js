@@ -32,7 +32,19 @@ export const getDeliveryFee = async (address) => {
     const response = await api.post('/bookings/delivery-fee', address);
     return response.data;
   } catch (error) {
-    console.error('Error fetching delivery fee:', error);
+    throw error;
+  }
+};
+
+export const getQuote = async (quoteRequest) => {
+  try {
+    const response = await api.post('/bookings/quote', quoteRequest);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching quote:', error);
+    throw error;
+  }
+};
     throw error;
   }
 };
