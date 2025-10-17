@@ -34,7 +34,7 @@ function BookingForm({ startDate, endDate }) {
           setQuote(quoteData);
         } catch (error) {
           console.error('Failed to fetch quote:', error);
-          setQuote(null); // Clear quote on error
+          setQuote(null);
         }
         setIsFetchingQuote(false);
       }
@@ -42,14 +42,14 @@ function BookingForm({ startDate, endDate }) {
 
     const debounce = setTimeout(() => {
         fetchQuote();
-    }, 500); // Debounce to avoid excessive API calls while typing
+    }, 500);
 
     return () => clearTimeout(debounce);
   }, [startDate, endDate, address, city, state, zipCode]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!stripe || !elements) {
+    if (!stripe || !elements || !quote) {
       return;
     }
 
@@ -87,8 +87,8 @@ function BookingForm({ startDate, endDate }) {
   const cardElementOptions = {
     style: {
       base: {
-        color: '#ffffff',
-        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        color: '#32325d',
+        fontFamily: ''Arial, sans-serif'',
         fontSmoothing: 'antialiased',
         fontSize: '16px',
         '::placeholder': {
@@ -103,15 +103,37 @@ function BookingForm({ startDate, endDate }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <h2 className="text-lg font-semibold text-center text-white">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <h2 className="text-lg font-semibold text-center">
         Booking for: {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
       </h2>
       
-      {/* Customer and Address Fields... */}
-      {/* ... (All input fields remain the same) ... */}
+      <div>
+        <label htmlFor="customerName">Name</label>
+        <input id="customerName" type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} required />
+      </div>
+      <div>
+        <label htmlFor="customerEmail">Email</label>
+        <input id="customerEmail" type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} required />
+      </div>
+      <div>
+        <label htmlFor="address">Address</label>
+        <input id="address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} required />
+      </div>
+      <div>
+        <label htmlFor="city">City</label>
+        <input id="city" type="text" value={city} onChange={(e) => setCity(e.target.value)} required />
+      </div>
+      <div>
+        <label htmlFor="state">State</label>
+        <input id="state" type="text" value={state} onChange={(e) => setState(e.target.value)} required />
+      </div>
+      <div>
+        <label htmlFor="zipCode">Zip Code</label>
+        <input id="zipCode" type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required />
+      </div>
 
-      <div className="text-white bg-gray-700 p-4 rounded-lg">
+      <div className="bg-gray-100 p-4 rounded-md">
         <h3 className="text-lg font-bold mb-2">Price Quote</h3>
         {isFetchingQuote && <p>Calculating price...</p>}
         {quote && !isFetchingQuote && (
@@ -119,26 +141,37 @@ function BookingForm({ startDate, endDate }) {
                 <p>Rental Fee ({quote.rentalDays} days): ${quote.rentalFee.toFixed(2)}</p>
                 <p>Delivery Fee: ${quote.deliveryFee.toFixed(2)}</p>
                 <p>Refundable Security Deposit: ${quote.securityDeposit.toFixed(2)}</p>
-                <p className="font-bold text-blue-400 mt-2">Total Price: ${quote.totalPrice.toFixed(2)}</p>
+                <p className="font-bold mt-2">Total Price: ${quote.totalPrice.toFixed(2)}</p>
             </>
         )}
         {!quote && !isFetchingQuote && <p>Please complete the address fields to calculate the price.</p>}
       </div>
 
-      {/* Tent Type, Number of Tents, Special Requests... */}
-      {/* ... (These input fields remain the same) ... */}
+      <div>
+        <label htmlFor="tentType">Tent Type</label>
+        <select id="tentType" value={tentType} onChange={(e) => setTentType(e.target.value)} required>
+          <option value="Standard">Standard</option>
+          <option value="Deluxe">Deluxe</option>
+          <option value="Luxury">Luxury</option>
+        </select>
+      </div>
+      <div>
+        <label htmlFor="numberOfTents">Number of Tents</label>
+        <input id="numberOfTents" type="number" value={numberOfTents} onChange={(e) => setNumberOfTents(parseInt(e.target.value, 10))} required min="1" />
+      </div>
+      <div>
+        <label htmlFor="specialRequests">Special Requests</label>
+        <textarea id="specialRequests" value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)} rows="3" />
+      </div>
 
       <div>
-        <label htmlFor="card-element" className="block text-sm font-bold text-gray-300 mb-1">Credit or debit card</label>
-        <div className="p-2 rounded-md border border-gray-300 min-h-[42px] flex items-center bg-gray-700">
-          <CardElement id="card-element" options={cardElementOptions} className="w-full" />
+        <label htmlFor="card-element">Credit or debit card</label>
+        <div className="p-2 border rounded-md">
+          <CardElement id="card-element" options={cardElementOptions} />
         </div>
       </div>
-      <button
-        type="submit"
-        disabled={!stripe || !quote || isFetchingQuote}
-        className="w-full button-primary font-bold py-2 px-4 rounded-md transition-colors duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed"
-      >
+
+      <button type="submit" disabled={!stripe || !quote || isFetchingQuote} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400">
         Book Now
       </button>
     </form>
