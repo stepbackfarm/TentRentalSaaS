@@ -40,13 +40,25 @@ namespace TentRentalSaaS.Api.Migrations
                     b.Property<decimal>("DeliveryFee")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("EventAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EventCity")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("EventDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("EventEndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("EventLocation")
+                    b.Property<string>("EventState")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EventZipCode")
                         .IsRequired()
                         .HasColumnType("text");
 

@@ -12,7 +12,10 @@ namespace TentRentalSaaS.Api.Models
         public DateTime EventEndDate { get; set; }
         public DateTime BookingDate { get; set; }
         public string? StripePaymentIntentId { get; set; }
-        public string EventLocation { get; set; } = string.Empty;
+        public string EventAddress { get; set; } = string.Empty;
+        public string EventCity { get; set; } = string.Empty;
+        public string EventState { get; set; } = string.Empty;
+        public string EventZipCode { get; set; } = string.Empty;
         public decimal RentalFee { get; set; }
         public decimal SecurityDeposit { get; set; }
         public decimal DeliveryFee { get; set; }

@@ -12,8 +12,8 @@ using TentRentalSaaS.Api.Models;
 namespace TentRentalSaaS.Api.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20251015015556_AddIsUsedToLoginToken")]
-    partial class AddIsUsedToLoginToken
+    [Migration("20251018041252_InitialCreateWithStructuredBookingAddress")]
+    partial class InitialCreateWithStructuredBookingAddress
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,13 +43,25 @@ namespace TentRentalSaaS.Api.Migrations
                     b.Property<decimal>("DeliveryFee")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("EventAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EventCity")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("EventDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("EventEndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("EventLocation")
+                    b.Property<string>("EventState")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EventZipCode")
                         .IsRequired()
                         .HasColumnType("text");
 

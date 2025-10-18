@@ -152,7 +152,10 @@ namespace TentRentalSaaS.Api.Services
 
             var booking = new Booking
             {
-                EventLocation = $"{bookingRequest.Address}, {bookingRequest.City}, {bookingRequest.State} {bookingRequest.ZipCode}",
+                EventAddress = bookingRequest.Address,
+                EventCity = bookingRequest.City,
+                EventState = bookingRequest.State,
+                EventZipCode = bookingRequest.ZipCode,
                 EventDate = bookingRequest.EventDate,
                 EventEndDate = bookingRequest.EventEndDate,
                 TentType = bookingRequest.TentType,
@@ -205,6 +208,7 @@ namespace TentRentalSaaS.Api.Services
                     + $"<p><strong>Customer:</strong> {customer.FirstName} {customer.LastName}</p>"
                     + $"<p><strong>Email:</strong> {customer.Email}</p>"
                     + $"<p><strong>Event Date:</strong> {booking.EventDate:D} - {booking.EventEndDate:D}</p>"
+                    + $"<p><strong>Event Location:</strong> {booking.EventAddress}, {booking.EventCity}, {booking.EventState} {booking.EventZipCode}</p>"
                     + $"<p><strong>Tent Type:</strong> {booking.TentType}</p>"
                     + $"<p><strong>Number of Tents:</strong> {booking.NumberOfTents}</p>"
                     + $"<h2>Pricing Breakdown</h2>"
