@@ -39,9 +39,6 @@ namespace TentRentalSaaS.Api.DTOs
         [MinLength(1)]
         public string TentType { get; set; } = string.Empty;
 
-        [Range(1, 100)]
-        public int NumberOfTents { get; set; }
-
         public string? SpecialRequests { get; set; }
 
         [Required]

@@ -74,7 +74,6 @@ namespace TentRentalSaaS.Api.Services
                     EventDate = b.EventDate,
                     Status = b.Status,
                     TentType = b.TentType,
-                    NumberOfTents = b.NumberOfTents,
                     CustomerName = loginToken.Customer.FirstName + " " + loginToken.Customer.LastName,
                     CustomerEmail = loginToken.Customer.Email,
                     StripePaymentIntentId = b.StripePaymentIntentId
