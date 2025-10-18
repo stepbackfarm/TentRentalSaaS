@@ -127,5 +127,30 @@ namespace TentRentalSaaS.Api.Tests
             Assert.Equal("Confirmed", resultDto.Status);
             Assert.Equal("pi_test_123", resultDto.StripePaymentIntentId);
         }
+
+        [Fact]
+        public async Task CreateBookingAsync_ShouldSetEventLocation()
+        {
+            // Arrange
+            await using var dbContext = GetDbContext();
+            var bookingService = new BookingService(dbContext, _paymentServiceMock.Object, _geocodingServiceMock.Object, _emailServiceMock.Object, _loggerMock.Object, _configuration);
+            var bookingRequest = new BookingRequestDto
+            {
+                CustomerName = "John Doe",
+                CustomerEmail = "john.doe@example.com",
+                PaymentMethodId = "pm_card_visa",
+                Address = "123 Main St",
+                City = "Anytown",
+                State = "CA",
+                ZipCode = "12345"
+            };
+
+            // Act
+            await bookingService.CreateBookingAsync(bookingRequest);
+
+            // Assert
+            var booking = await dbContext.Bookings.FirstAsync();
+            Assert.Equal("123 Main St, Anytown, CA 12345", booking.EventLocation);
+        }
     }
 }

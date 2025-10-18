@@ -141,6 +141,7 @@ namespace TentRentalSaaS.Api.Services
 
             var booking = new Booking
             {
+                EventLocation = $"{bookingRequest.Address}, {bookingRequest.City}, {bookingRequest.State} {bookingRequest.ZipCode}",
                 EventDate = bookingRequest.EventDate,
                 EventEndDate = bookingRequest.EventEndDate,
                 TentType = bookingRequest.TentType,
