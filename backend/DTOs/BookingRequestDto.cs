@@ -24,6 +24,11 @@ namespace TentRentalSaaS.Api.DTOs
         [Required]
         public string ZipCode { get; set; } = string.Empty;
 
+        public string? BillingAddress { get; set; }
+        public string? BillingCity { get; set; }
+        public string? BillingState { get; set; }
+        public string? BillingZipCode { get; set; }
+
         [Required]
         public DateTime EventDate { get; set; }
 
