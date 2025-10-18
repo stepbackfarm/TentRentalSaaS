@@ -179,9 +179,20 @@ namespace TentRentalSaaS.Api.Services
             var emailSubject = "Your Tent Rental Booking is Confirmed!";
             var emailBody = $"<h1>Booking Confirmed!</h1>"
                 + "<p>Your tent is booked. We\'ve sent a confirmation to your email.</p>"
+                + "<h2>Booking Details</h2>"
+                + $"<p><strong>Event Date:</strong> {booking.EventDate:D} - {booking.EventEndDate:D}</p>"
+                + $"<p><strong>Event Location:</strong> {booking.EventAddress}, {booking.EventCity}, {booking.EventState} {booking.EventZipCode}</p>"
+                + $"<p><strong>Tent Type:</strong> {booking.TentType}</p>"
+                + $"<p><strong>Number of Tents:</strong> {booking.NumberOfTents}</p>"
+                + "<h2>Payment Receipt</h2>"
+                + "<ul>"
+                + $"<li><strong>Rental Fee ({quote.RentalDays} days):</strong> ${booking.RentalFee:F2}</li>"
+                + $"<li><strong>Delivery Fee:</strong> ${booking.DeliveryFee:F2}</li>"
+                + $"<li><strong>Security Deposit:</strong> ${booking.SecurityDeposit:F2}</li>"
+                + "</ul>"
+                + $"<p><strong>Total Price:</strong> ${booking.TotalPrice:F2}</p>"
                 + "<h2>What to Expect Next</h2>"
                 + "<ul>"
-                + "<li>You will receive a confirmation email shortly.</li>"
                 + "<li>We will contact you 2-3 days before your event to confirm setup details.</li>"
                 + "<li>Our team will arrive on the day of your event to set up the tent.</li>"
                 + "<li>After your event, we will return to take down the tent.</li>"
@@ -207,18 +218,19 @@ namespace TentRentalSaaS.Api.Services
                 var adminBody = $"<h1>New Booking Received</h1>"
                     + $"<p><strong>Customer:</strong> {customer.FirstName} {customer.LastName}</p>"
                     + $"<p><strong>Email:</strong> {customer.Email}</p>"
+                    + $"<p><strong>Customer Address:</strong> {customer.Address}, {customer.City}, {customer.State} {customer.ZipCode}</p>"
                     + $"<p><strong>Event Date:</strong> {booking.EventDate:D} - {booking.EventEndDate:D}</p>"
                     + $"<p><strong>Event Location:</strong> {booking.EventAddress}, {booking.EventCity}, {booking.EventState} {booking.EventZipCode}</p>"
                     + $"<p><strong>Tent Type:</strong> {booking.TentType}</p>"
                     + $"<p><strong>Number of Tents:</strong> {booking.NumberOfTents}</p>"
                     + $"<h2>Pricing Breakdown</h2>"
                     + $"<ul>"
-                    + $"<li><strong>Rental Fee ({quote.RentalDays} days):</strong> {booking.RentalFee:C}</li>"
-                    + $"<li><strong>Delivery Fee:</strong> {booking.DeliveryFee:C}</li>"
-                    + $"<li><strong>Security Deposit:</strong> {booking.SecurityDeposit:C}</li>"
+                    + $"<li><strong>Rental Fee ({quote.RentalDays} days):</strong> ${booking.RentalFee:F2}</li>"
+                    + $"<li><strong>Delivery Fee:</strong> ${booking.DeliveryFee:F2}</li>"
+                    + $"<li><strong>Security Deposit:</strong> ${booking.SecurityDeposit:F2}</li>"
                     + $"</ul>"
-                    + $"<p><strong>Total Price:</strong> {booking.TotalPrice:C}</p>"
-                    + $"<p><strong>Stripe Charge:</strong> {amountInCents / 100m:C} ({amountInCents} cents)</p>"
+                    + $"<p><strong>Total Price:</strong> ${booking.TotalPrice:F2}</p>"
+                    + $"<p><strong>Stripe Charge:</strong> ${amountInCents / 100m:F2} ({amountInCents} cents)</p>"
                     + $"<p><strong>Stripe Payment Intent ID:</strong> {booking.StripePaymentIntentId}</p>";
                 await _emailService.SendEmailAsync(adminEmail, adminSubject, adminBody);
             }
@@ -253,7 +265,7 @@ namespace TentRentalSaaS.Api.Services
                 var customerCoords = await _geocodingService.GetCoordinatesAsync(fullCustomerAddress);
                 
                 // DistanceCalculator returns miles (verified by EarthRadiusMiles = 3959)
-                var distanceInMiles = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
+                var distanceInMiles = Math.Floor(DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude));
                 
                 // Business rule: $2.00 per mile delivery fee with minimum charge logic
                 const decimal ratePerMile = 2.00m;
