@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TentRentalSaaS.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCreateWithStructuredBookingAddress : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,20 +36,30 @@ namespace TentRentalSaaS.Api.Migrations
                 name: "Bookings",
                 columns: table => new
                 {
-                    BookingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
                     EventDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EventLocation = table.Column<string>(type: "text", nullable: false),
+                    EventEndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    BookingDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StripePaymentIntentId = table.Column<string>(type: "text", nullable: true),
+                    EventAddress = table.Column<string>(type: "text", nullable: false),
+                    EventCity = table.Column<string>(type: "text", nullable: false),
+                    EventState = table.Column<string>(type: "text", nullable: false),
+                    EventZipCode = table.Column<string>(type: "text", nullable: false),
                     RentalFee = table.Column<decimal>(type: "numeric", nullable: false),
                     SecurityDeposit = table.Column<decimal>(type: "numeric", nullable: false),
                     DeliveryFee = table.Column<decimal>(type: "numeric", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    LastModifiedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TentType = table.Column<string>(type: "text", nullable: false),
+                    NumberOfTents = table.Column<int>(type: "integer", nullable: false),
+                    SpecialRequests = table.Column<string>(type: "text", nullable: true),
+                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bookings", x => x.BookingId);
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Bookings_Customers_CustomerId",
                         column: x => x.CustomerId,
@@ -66,6 +76,7 @@ namespace TentRentalSaaS.Api.Migrations
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
                     ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsUsed = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
