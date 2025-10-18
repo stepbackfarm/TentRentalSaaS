@@ -65,9 +65,6 @@ namespace TentRentalSaaS.Api.Migrations
                     b.Property<DateTime>("LastModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("NumberOfTents")
-                        .HasColumnType("integer");
-
                     b.Property<decimal>("RentalFee")
                         .HasColumnType("numeric");
 

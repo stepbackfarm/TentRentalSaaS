@@ -159,7 +159,6 @@ namespace TentRentalSaaS.Api.Services
                 EventDate = bookingRequest.EventDate,
                 EventEndDate = bookingRequest.EventEndDate,
                 TentType = bookingRequest.TentType,
-                NumberOfTents = bookingRequest.NumberOfTents,
                 SpecialRequests = bookingRequest.SpecialRequests,
                 BookingDate = DateTime.UtcNow,
                 CreatedDate = DateTime.UtcNow,
@@ -178,12 +177,11 @@ namespace TentRentalSaaS.Api.Services
 
             var emailSubject = "Your Tent Rental Booking is Confirmed!";
             var emailBody = $"<h1>Booking Confirmed!</h1>"
-                + "<p>Your tent is booked. We\'ve sent a confirmation to your email.</p>"
+                + "<p>Your tent is booked.</p>"
                 + "<h2>Booking Details</h2>"
                 + $"<p><strong>Event Date:</strong> {booking.EventDate:D} - {booking.EventEndDate:D}</p>"
                 + $"<p><strong>Event Location:</strong> {booking.EventAddress}, {booking.EventCity}, {booking.EventState} {booking.EventZipCode}</p>"
                 + $"<p><strong>Tent Type:</strong> {booking.TentType}</p>"
-                + $"<p><strong>Number of Tents:</strong> {booking.NumberOfTents}</p>"
                 + "<h2>Payment Receipt</h2>"
                 + "<ul>"
                 + $"<li><strong>Rental Fee ({quote.RentalDays} days):</strong> ${booking.RentalFee:F2}</li>"
@@ -222,7 +220,6 @@ namespace TentRentalSaaS.Api.Services
                     + $"<p><strong>Event Date:</strong> {booking.EventDate:D} - {booking.EventEndDate:D}</p>"
                     + $"<p><strong>Event Location:</strong> {booking.EventAddress}, {booking.EventCity}, {booking.EventState} {booking.EventZipCode}</p>"
                     + $"<p><strong>Tent Type:</strong> {booking.TentType}</p>"
-                    + $"<p><strong>Number of Tents:</strong> {booking.NumberOfTents}</p>"
                     + $"<h2>Pricing Breakdown</h2>"
                     + $"<ul>"
                     + $"<li><strong>Rental Fee ({quote.RentalDays} days):</strong> ${booking.RentalFee:F2}</li>"
@@ -246,7 +243,6 @@ namespace TentRentalSaaS.Api.Services
                 EventDate = booking.EventDate,
                 Status = booking.Status,
                 TentType = booking.TentType,
-                NumberOfTents = booking.NumberOfTents,
                 CustomerName = customer.FirstName + " " + customer.LastName,
                 CustomerEmail = customer.Email,
                 StripePaymentIntentId = booking.StripePaymentIntentId

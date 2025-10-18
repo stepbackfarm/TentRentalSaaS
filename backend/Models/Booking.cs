@@ -23,7 +23,6 @@ namespace TentRentalSaaS.Api.Models
         public DateTime CreatedDate { get; set; }
         public DateTime LastModifiedDate { get; set; }
         public string TentType { get; set; } = string.Empty;
-        public int NumberOfTents { get; set; }
         public string? SpecialRequests { get; set; }
         public decimal TotalPrice { get; set; }
 

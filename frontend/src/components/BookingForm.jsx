@@ -15,8 +15,6 @@ function BookingForm({ startDate, endDate }) {
   const [billingState, setBillingState] = useState('');
   const [billingZipCode, setBillingZipCode] = useState('');
   const [isBillingSameAsEvent, setIsBillingSameAsEvent] = useState(true);
-  const [tentType, setTentType] = useState('Standard');
-  const [numberOfTents, setNumberOfTents] = useState(1);
   const [specialRequests, setSpecialRequests] = useState('');
   const [quote, setQuote] = useState(null);
   const [isFetchingQuote, setIsFetchingQuote] = useState(false);
@@ -81,8 +79,6 @@ function BookingForm({ startDate, endDate }) {
           billingCity: isBillingSameAsEvent ? null : billingCity,
           billingState: isBillingSameAsEvent ? null : billingState,
           billingZipCode: isBillingSameAsEvent ? null : billingZipCode,
-          tentType,
-          numberOfTents,
           specialRequests,
           paymentMethodId: paymentMethod.id,
         });
@@ -189,18 +185,6 @@ function BookingForm({ startDate, endDate }) {
         {!quote && !isFetchingQuote && <p>Please complete the address fields to calculate the price.</p>}
       </div>
 
-      <div>
-        <label htmlFor="tentType">Tent Type</label>
-        <select id="tentType" value={tentType} onChange={(e) => setTentType(e.target.value)} required>
-          <option value="Standard">Standard</option>
-          <option value="Deluxe">Deluxe</option>
-          <option value="Luxury">Luxury</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="numberOfTents">Number of Tents</label>
-        <input id="numberOfTents" type="number" value={numberOfTents} onChange={(e) => setNumberOfTents(parseInt(e.target.value, 10))} required min="1" />
-      </div>
       <div>
         <label htmlFor="specialRequests">Special Requests</label>
         <textarea id="specialRequests" value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)} rows="3" />
