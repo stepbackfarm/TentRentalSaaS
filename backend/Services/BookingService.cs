@@ -124,7 +124,7 @@ namespace TentRentalSaaS.Api.Services
             {
                 StartDate = bookingRequest.EventDate,
                 EndDate = bookingRequest.EventEndDate,
-                Address = new AddressDto { Address = customer.Address, City = customer.City, State = customer.State, ZipCode = customer.ZipCode }
+                Address = new AddressDto { Address = bookingRequest.Address, City = bookingRequest.City, State = bookingRequest.State, ZipCode = bookingRequest.ZipCode }
             };
             var quote = await GetQuoteAsync(quoteRequest);
 
