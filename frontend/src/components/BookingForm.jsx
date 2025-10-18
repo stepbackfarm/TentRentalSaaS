@@ -10,6 +10,11 @@ function BookingForm({ startDate, endDate }) {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [zipCode, setZipCode] = useState('');
+  const [billingAddress, setBillingAddress] = useState('');
+  const [billingCity, setBillingCity] = useState('');
+  const [billingState, setBillingState] = useState('');
+  const [billingZipCode, setBillingZipCode] = useState('');
+  const [isBillingSameAsEvent, setIsBillingSameAsEvent] = useState(true);
   const [tentType, setTentType] = useState('Standard');
   const [numberOfTents, setNumberOfTents] = useState(1);
   const [specialRequests, setSpecialRequests] = useState('');
@@ -72,6 +77,10 @@ function BookingForm({ startDate, endDate }) {
           city,
           state,
           zipCode,
+          billingAddress: isBillingSameAsEvent ? null : billingAddress,
+          billingCity: isBillingSameAsEvent ? null : billingCity,
+          billingState: isBillingSameAsEvent ? null : billingState,
+          billingZipCode: isBillingSameAsEvent ? null : billingZipCode,
           tentType,
           numberOfTents,
           specialRequests,
@@ -132,6 +141,39 @@ function BookingForm({ startDate, endDate }) {
         <label htmlFor="zipCode">Zip Code</label>
         <input id="zipCode" type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required />
       </div>
+
+      <div>
+        <label htmlFor="sameAsEvent">
+          <input
+            id="sameAsEvent"
+            type="checkbox"
+            checked={isBillingSameAsEvent}
+            onChange={(e) => setIsBillingSameAsEvent(e.target.checked)}
+          />
+          Billing address is the same as event address
+        </label>
+      </div>
+
+      {!isBillingSameAsEvent && (
+        <>
+          <div>
+            <label htmlFor="billingAddress">Billing Address</label>
+            <input id="billingAddress" type="text" value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} required />
+          </div>
+          <div>
+            <label htmlFor="billingCity">Billing City</label>
+            <input id="billingCity" type="text" value={billingCity} onChange={(e) => setBillingCity(e.target.value)} required />
+          </div>
+          <div>
+            <label htmlFor="billingState">Billing State</label>
+            <input id="billingState" type="text" value={billingState} onChange={(e) => setBillingState(e.target.value)} required />
+          </div>
+          <div>
+            <label htmlFor="billingZipCode">Billing Zip Code</label>
+            <input id="billingZipCode" type="text" value={billingZipCode} onChange={(e) => setBillingZipCode(e.target.value)} required />
+          </div>
+        </>
+      )}
 
       <div className="bg-gray-100 p-4 rounded-md">
         <h3 className="text-lg font-bold mb-2">Price Quote</h3>

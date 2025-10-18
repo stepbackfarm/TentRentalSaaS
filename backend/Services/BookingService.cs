@@ -49,15 +49,10 @@ namespace TentRentalSaaS.Api.Services
 
         public async Task<QuoteResponseDto> GetQuoteAsync(QuoteRequestDto quoteRequest)
         {
-            _logger.LogInformation("--- GetQuoteAsync START ---");
-            _logger.LogInformation("RAW StartDate: {StartDate}, Kind: {StartKind}", quoteRequest.StartDate, quoteRequest.StartDate.Kind);
-            _logger.LogInformation("RAW EndDate: {EndDate}, Kind: {EndKind}", quoteRequest.EndDate, quoteRequest.EndDate.Kind);
-
             var dateDifference = quoteRequest.EndDate.Date - quoteRequest.StartDate.Date;
             _logger.LogInformation("DateDifference TimeSpan: {TimeSpan}", dateDifference);
 
             var rentalDays = dateDifference.Days;
-            _logger.LogInformation("GetQuoteAsync calculated rentalDays: {RentalDays}", rentalDays);
             if (rentalDays < 2) {
                 rentalDays = 2;
             }
@@ -78,10 +73,6 @@ namespace TentRentalSaaS.Api.Services
             var securityDeposit = 100m;
             var totalPrice = rentalFee + securityDeposit + deliveryFee;
 
-            // Log all calculated values for debugging
-            _logger.LogInformation("Quote calculation: rentalDays={RentalDays}, rentalFee={RentalFee:C}, deliveryFee={DeliveryFee:C}, securityDeposit={SecurityDeposit:C}, totalPrice={TotalPrice:C}", 
-                rentalDays, rentalFee, deliveryFee, securityDeposit, totalPrice);
-
             return new QuoteResponseDto
             {
                 RentalFee = rentalFee,
@@ -98,8 +89,29 @@ namespace TentRentalSaaS.Api.Services
 
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);
 
-            if (customer == null)
+            var customerAddress = bookingRequest.BillingAddress ?? bookingRequest.Address;
+            var customerCity = bookingRequest.BillingCity ?? bookingRequest.City;
+            var customerState = bookingRequest.BillingState ?? bookingRequest.State;
+            var customerZipCode = bookingRequest.BillingZipCode ?? bookingRequest.ZipCode;
+
+            if (customer != null)
             {
+                // Customer exists, check if address needs updating
+                if (customer.Address != customerAddress ||
+                    customer.City != customerCity ||
+                    customer.State != customerState ||
+                    customer.ZipCode != customerZipCode)
+                {
+                    customer.Address = customerAddress;
+                    customer.City = customerCity;
+                    customer.State = customerState;
+                    customer.ZipCode = customerZipCode;
+                    customer.LastModifiedDate = DateTime.UtcNow;
+                }
+            }
+            else
+            {
+                // Create new customer
                 var nameParts = bookingRequest.CustomerName.Split(' ', 2);
                 var firstName = nameParts.Length > 0 ? nameParts[0] : string.Empty;
                 var lastName = nameParts.Length > 1 ? nameParts[1] : string.Empty;
@@ -109,10 +121,10 @@ namespace TentRentalSaaS.Api.Services
                     FirstName = firstName,
                     LastName = lastName,
                     Email = bookingRequest.CustomerEmail,
-                    Address = bookingRequest.Address,
-                    City = bookingRequest.City,
-                    State = bookingRequest.State,
-                    ZipCode = bookingRequest.ZipCode,
+                    Address = customerAddress,
+                    City = customerCity,
+                    State = customerState,
+                    ZipCode = customerZipCode,
                     CreatedDate = DateTime.UtcNow,
                     LastModifiedDate = DateTime.UtcNow
                 };
@@ -130,7 +142,6 @@ namespace TentRentalSaaS.Api.Services
 
             // Safe decimal to cents conversion for Stripe
             var amountInCents = Convert.ToInt64(Math.Round(quote.TotalPrice * 100m, 0, MidpointRounding.AwayFromZero));
-            _logger.LogInformation("Charging Stripe: totalPrice={TotalPrice:C}, amountInCents={AmountInCents}", quote.TotalPrice, amountInCents);
 
             var paymentIntent = await _paymentService.CreatePaymentIntentAsync(
                 amountInCents,
@@ -233,15 +244,12 @@ namespace TentRentalSaaS.Api.Services
             try
             {
                 var darlingtonCoords = await _geocodingService.GetCoordinatesAsync("Darlington, Indiana");
-                _logger.LogInformation("Darlington coordinates: Lat={Lat}, Lon={Lon}", darlingtonCoords.Latitude, darlingtonCoords.Longitude);
                 
                 var fullCustomerAddress = $"{address.Address}, {address.City}, {address.State} {address.ZipCode}";
                 var customerCoords = await _geocodingService.GetCoordinatesAsync(fullCustomerAddress);
-                _logger.LogInformation("Customer '{Address}' coordinates: Lat={Lat}, Lon={Lon}", fullCustomerAddress, customerCoords.Latitude, customerCoords.Longitude);
                 
                 // DistanceCalculator returns miles (verified by EarthRadiusMiles = 3959)
                 var distanceInMiles = DistanceCalculator.CalculateDistance(darlingtonCoords.Latitude, darlingtonCoords.Longitude, customerCoords.Latitude, customerCoords.Longitude);
-                _logger.LogInformation("Raw distance from DistanceCalculator: {Distance} miles", distanceInMiles);
                 
                 // Business rule: $2.00 per mile delivery fee with minimum charge logic
                 const decimal ratePerMile = 2.00m;
@@ -251,9 +259,6 @@ namespace TentRentalSaaS.Api.Services
                 var calculatedFee = baseFee + ((decimal)distanceInMiles * ratePerMile);
                 var deliveryFee = Math.Max(calculatedFee, minFee);
                 deliveryFee = Math.Round(deliveryFee, 2, MidpointRounding.AwayFromZero);
-                
-                _logger.LogInformation("Delivery fee calculation: distanceInMiles={Distance:F3}, ratePerMile={Rate:C}, calculatedFee={CalculatedFee:C}, finalFee={FinalFee:C}", 
-                    distanceInMiles, ratePerMile, calculatedFee, deliveryFee);
                 
                 // Sanity check - if delivery fee is unreasonably high, log error and use default
                 if (deliveryFee > 500m)
