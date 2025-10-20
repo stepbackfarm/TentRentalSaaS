@@ -35,6 +35,16 @@ namespace TentRentalSaaS.Api.Services
 
             if (customer != null)
             {
+                // Invalidate all other unused tokens for this user
+                var existingTokens = await _dbContext.LoginTokens
+                    .Where(t => t.CustomerId == customer.CustomerId && !t.IsUsed)
+                    .ToListAsync();
+
+                foreach (var existingToken in existingTokens)
+                {
+                    existingToken.IsUsed = true;
+                }
+
                 var loginToken = new LoginToken
                 {
                     Token = Guid.NewGuid().ToString("n"), // Generate a secure, random token
@@ -64,7 +74,7 @@ namespace TentRentalSaaS.Api.Services
         {
             var loginToken = await _dbContext.LoginTokens
                 .Include(t => t.Customer)
-                .FirstOrDefaultAsync(t => t.Token == token && !t.IsUsed && t.ExpiryDate > DateTimeOffset.UtcNow);
+                .FirstOrDefaultAsync(t => string.Equals(t.Token, token, StringComparison.OrdinalIgnoreCase) && !t.IsUsed);
 
             if (loginToken == null)
             {
