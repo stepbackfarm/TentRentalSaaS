@@ -54,9 +54,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins("https://tent-rental-hh1bx2kh8-davids-projects-15ffe845.vercel.app",
-                                "http://localhost:5173",
-                                "http://localhost:5174")
+            var allowedOrigins = app.Configuration["ALLOWED_ORIGINS"].Split(',');
+            builder.WithOrigins(allowedOrigins)
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });

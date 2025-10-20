@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
 
@@ -11,11 +12,13 @@ namespace TentRentalSaaS.Api.Services
     {
         private readonly ApiDbContext _dbContext;
         private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
 
-        public AuthService(ApiDbContext dbContext, IEmailService emailService)
+        public AuthService(ApiDbContext dbContext, IEmailService emailService, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _emailService = emailService;
+            _configuration = configuration;
         }
 
         public async Task RequestLoginLinkAsync(string email)
@@ -35,9 +38,8 @@ namespace TentRentalSaaS.Api.Services
                 _dbContext.LoginTokens.Add(loginToken);
                 await _dbContext.SaveChangesAsync();
 
-                // The base URL for the frontend portal login page.
-                // In a real app, this would come from configuration.
-                var loginUrl = $"https://tent-rental-hh1bx2kh8-davids-projects-15ffe845.vercel.app/portal/login?token={loginToken.Token}";
+                var frontendBaseUrl = _configuration["FRONTEND_BASE_URL"];
+                var loginUrl = $"{frontendBaseUrl}/portal/login?token={loginToken.Token}";
 
                 var subject = "Your Secure Login Link";
                 var body = $"<h1>Login to Your Account</h1>"
