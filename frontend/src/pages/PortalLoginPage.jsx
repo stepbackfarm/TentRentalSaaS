@@ -17,7 +17,7 @@ function PortalLoginPage() {
 
         const verifyToken = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify?token=${token}`);
+                const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/verify?token=${token}`);
                 // On success, redirect to the portal page with the fetched data
                 navigate('/portal', { state: { portalData: response.data }, replace: true });
             } catch (err) {
