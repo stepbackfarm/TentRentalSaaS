@@ -52,12 +52,22 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder =>
+        policy =>
         {
-            var allowedOrigins = app.Configuration["ALLOWED_ORIGINS"].Split(',');
-            builder.WithOrigins(allowedOrigins)
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+            var allowedOriginsRaw = builder.Configuration["ALLOWED_ORIGINS"] ?? string.Empty;
+            var allowedOrigins = allowedOriginsRaw.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (allowedOrigins.Length > 0)
+            {
+                policy.WithOrigins(allowedOrigins)
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            }
+            else
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            }
         });
 });
 

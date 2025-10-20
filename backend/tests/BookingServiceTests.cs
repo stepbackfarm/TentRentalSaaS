@@ -87,6 +87,13 @@ namespace TentRentalSaaS.Api.Tests
             {
                 CustomerName = "Jane Doe",
                 CustomerEmail = "jane.doe@example.com",
+                Address = "456 Oak St",
+                City = "Springfield",
+                State = "IN",
+                ZipCode = "46000",
+                EventDate = DateTime.UtcNow.Date.AddDays(1),
+                EventEndDate = DateTime.UtcNow.Date.AddDays(2),
+                TentType = "Standard",
                 PaymentMethodId = "pm_card_visa"
             };
 
@@ -98,6 +105,7 @@ namespace TentRentalSaaS.Api.Tests
             Assert.Equal(1, dbContext.Bookings.Count());
             var booking = await dbContext.Bookings.Include(b => b.Customer).FirstAsync();
             Assert.Equal(existingCustomer.CustomerId, booking.CustomerId);
+            Assert.False(string.IsNullOrWhiteSpace(booking.EventAddress));
         }
 
         [Fact]
@@ -111,7 +119,12 @@ namespace TentRentalSaaS.Api.Tests
                 CustomerName = "Sam Smith",
                 CustomerEmail = "sam.smith@example.com",
                 TentType = "Large",
-                NumberOfTents = 2,
+                Address = "123 Main St",
+                City = "Anytown",
+                State = "CA",
+                ZipCode = "12345",
+                EventDate = DateTime.UtcNow.Date.AddDays(1),
+                EventEndDate = DateTime.UtcNow.Date.AddDays(3),
                 PaymentMethodId = "pm_card_visa"
             };
 
@@ -123,7 +136,6 @@ namespace TentRentalSaaS.Api.Tests
             Assert.Equal("Sam Smith", resultDto.CustomerName);
             Assert.Equal("sam.smith@example.com", resultDto.CustomerEmail);
             Assert.Equal("Large", resultDto.TentType);
-            Assert.Equal(2, resultDto.NumberOfTents);
             Assert.Equal("Confirmed", resultDto.Status);
             Assert.Equal("pi_test_123", resultDto.StripePaymentIntentId);
         }
@@ -150,7 +162,10 @@ namespace TentRentalSaaS.Api.Tests
 
             // Assert
             var booking = await dbContext.Bookings.FirstAsync();
-            Assert.Equal("123 Main St, Anytown, CA 12345", booking.EventLocation);
+            Assert.Equal("123 Main St", booking.EventAddress);
+            Assert.Equal("Anytown", booking.EventCity);
+            Assert.Equal("CA", booking.EventState);
+            Assert.Equal("12345", booking.EventZipCode);
         }
     }
 }

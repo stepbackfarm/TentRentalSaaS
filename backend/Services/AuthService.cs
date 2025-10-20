@@ -21,6 +21,14 @@ namespace TentRentalSaaS.Api.Services
             _configuration = configuration;
         }
 
+        // Backward-compatible constructor for tests or simple scenarios
+        public AuthService(ApiDbContext dbContext, IEmailService emailService)
+        {
+            _dbContext = dbContext;
+            _emailService = emailService;
+            _configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        }
+
         public async Task RequestLoginLinkAsync(string email)
         {
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == email);
@@ -51,7 +59,7 @@ namespace TentRentalSaaS.Api.Services
             // If the customer is not found, we do nothing. This prevents attackers from discovering valid email addresses.
         }
 
-        public async Task<PortalDataDto> VerifyLoginTokenAsync(string token)
+        public async Task<PortalDataDto?> VerifyLoginTokenAsync(string token)
         {
             var loginToken = await _dbContext.LoginTokens
                 .Include(t => t.Customer)
@@ -78,7 +86,7 @@ namespace TentRentalSaaS.Api.Services
                     TentType = b.TentType,
                     CustomerName = loginToken.Customer.FirstName + " " + loginToken.Customer.LastName,
                     CustomerEmail = loginToken.Customer.Email,
-                    StripePaymentIntentId = b.StripePaymentIntentId
+                    StripePaymentIntentId = b.StripePaymentIntentId ?? string.Empty
                 })
                 .ToListAsync();
 
