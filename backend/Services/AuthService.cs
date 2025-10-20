@@ -39,7 +39,8 @@ namespace TentRentalSaaS.Api.Services
                 {
                     Token = Guid.NewGuid().ToString("n"), // Generate a secure, random token
                     CustomerId = customer.CustomerId,
-                    ExpiryDate = DateTime.UtcNow.AddMinutes(15), // Token is valid for 15 minutes
+                    CreatedDate = DateTimeOffset.UtcNow,
+                    ExpiryDate = DateTimeOffset.UtcNow.AddMinutes(15), // Token is valid for 15 minutes
                     IsUsed = false
                 };
 
@@ -63,7 +64,7 @@ namespace TentRentalSaaS.Api.Services
         {
             var loginToken = await _dbContext.LoginTokens
                 .Include(t => t.Customer)
-                .FirstOrDefaultAsync(t => t.Token == token);
+                .FirstOrDefaultAsync(t => t.Token == token && !t.IsUsed && t.ExpiryDate > DateTimeOffset.UtcNow);
 
             if (loginToken == null)
             {

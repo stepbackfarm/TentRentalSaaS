@@ -9,9 +9,9 @@ namespace TentRentalSaaS.Api.Models
         public Guid TokenId { get; set; }
         public Guid CustomerId { get; set; }
         public string Token { get; set; } = string.Empty;
-        public DateTime ExpiryDate { get; set; }
+        public DateTimeOffset ExpiryDate { get; set; }
         public bool IsUsed { get; set; } = false;
-        public DateTime CreatedDate { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
 
         // Navigation property
         public Customer Customer { get; set; } = null!;
