@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { login } from '../services/api';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
@@ -12,8 +12,8 @@ function LoginPage() {
         setError('');
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, { email });
-            setMessage(response.data.message);
+            const response = await login(email);
+            setMessage(response.message);
         } catch (err) {
             setError('An error occurred. Please try again.');
         }

@@ -45,3 +45,12 @@ export const getQuote = async (quoteRequest) => {
     throw error;
   }
 };
+
+export const login = async (email) => {
+  try {
+    const response = await api.post('/auth/login', { email });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
