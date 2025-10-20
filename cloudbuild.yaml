@@ -21,6 +21,7 @@ steps:
   - '--no-traffic' # Don't route traffic immediately
   - '--allow-unauthenticated'
   - '--set-env-vars=^--^ASPNETCORE_ENVIRONMENT=Production--SMTP_SERVER=smtp.gmail.com--SMTP_PORT=587--SMTP_FROM=info@stepbackfarm.com--SMTP_USERNAME=david@stepbackfarm.com--DB_HOST=172.22.208.3--DB_NAME=tent-rental-db--DB_USER=postgres'
+  - '--update-env-vars=FRONTEND_BASE_URL=$_FRONTEND_BASE_URL,ALLOWED_ORIGINS=$_ALLOWED_ORIGINS'
   - '--set-secrets=DB_PASSWORD=DB_ADMIN_PASSWORD:latest,SMTP_PASSWORD=GOOGLE_SMTP_APP_PASSWORD:latest,GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest'
 
 # 4. Route 100% of traffic to the new revision
@@ -36,6 +37,11 @@ steps:
 # Store the image in Artifact Registry
 images:
 - 'us-central1-docker.pkg.dev/$_AR_PROJECT_ID/cloud-run-source-deploy/$_SERVICE_NAME:$COMMIT_SHA'
+
+# Define substitutions for environment-specific values
+substitutions:
+  _FRONTEND_BASE_URL: 'https://your-frontend-domain.com'  # Override this in your Cloud Build trigger
+  _ALLOWED_ORIGINS: 'https://your-frontend-domain.com,https://localhost:3000'  # Override this in your Cloud Build trigger
 
 options:
   logging: CLOUD_LOGGING_ONLY
