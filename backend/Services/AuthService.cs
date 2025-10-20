@@ -74,7 +74,7 @@ namespace TentRentalSaaS.Api.Services
         {
             var loginToken = await _dbContext.LoginTokens
                 .Include(t => t.Customer)
-                .FirstOrDefaultAsync(t => string.Equals(t.Token, token, StringComparison.OrdinalIgnoreCase) && !t.IsUsed);
+                .FirstOrDefaultAsync(t => string.Equals(t.Token, token, StringComparison.OrdinalIgnoreCase));
 
             if (loginToken == null)
             {
