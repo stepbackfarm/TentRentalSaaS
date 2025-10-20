@@ -59,11 +59,11 @@ namespace TentRentalSaaS.Api.Services
             // If the customer is not found, we do nothing. This prevents attackers from discovering valid email addresses.
         }
 
-        public async Task<PortalDataDto?> VerifyLoginTokenAsync(string token)
+        public async Task<PortalDataDto> VerifyLoginTokenAsync(string token)
         {
             var loginToken = await _dbContext.LoginTokens
                 .Include(t => t.Customer)
-                .FirstOrDefaultAsync(t => t.Token == token && !t.IsUsed && t.ExpiryDate > DateTime.UtcNow);
+                .FirstOrDefaultAsync(t => t.Token == token);
 
             if (loginToken == null)
             {
