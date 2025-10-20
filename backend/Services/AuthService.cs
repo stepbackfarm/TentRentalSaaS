@@ -1,8 +1,6 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
 
@@ -13,12 +11,14 @@ namespace TentRentalSaaS.Api.Services
         private readonly ApiDbContext _dbContext;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(ApiDbContext dbContext, IEmailService emailService, IConfiguration configuration)
+        public AuthService(ApiDbContext dbContext, IEmailService emailService, IConfiguration configuration, ILogger<AuthService> logger)
         {
             _dbContext = dbContext;
             _emailService = emailService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         // Backward-compatible constructor for tests or simple scenarios
@@ -27,10 +27,13 @@ namespace TentRentalSaaS.Api.Services
             _dbContext = dbContext;
             _emailService = emailService;
             _configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            _logger = new LoggerFactory().CreateLogger<AuthService>(); // Fallback for tests
         }
 
         public async Task RequestLoginLinkAsync(string email)
         {
+            _logger.LogInformation("RequestLoginLinkAsync called for email: {Email}", email);
+
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == email);
 
             if (customer != null)
@@ -43,6 +46,7 @@ namespace TentRentalSaaS.Api.Services
                 foreach (var existingToken in existingTokens)
                 {
                     existingToken.IsUsed = true;
+                    _logger.LogInformation("Invalidating old token: {Token}", existingToken.Token);
                 }
 
                 var loginToken = new LoginToken
@@ -56,6 +60,8 @@ namespace TentRentalSaaS.Api.Services
 
                 _dbContext.LoginTokens.Add(loginToken);
                 await _dbContext.SaveChangesAsync();
+                _logger.LogInformation("New login token created and saved. Token: {Token}, CreatedDate: {CreatedDate}, ExpiryDate: {ExpiryDate}",
+                    loginToken.Token, loginToken.CreatedDate, loginToken.ExpiryDate);
 
                 var frontendBaseUrl = _configuration["FRONTEND_BASE_URL"];
                 var loginUrl = $"{frontendBaseUrl}/portal/login?token={loginToken.Token}";
@@ -66,25 +72,50 @@ namespace TentRentalSaaS.Api.Services
                          + $"<a href=\"{loginUrl}\">Click here to log in</a>";
 
                 await _emailService.SendEmailAsync(customer.Email, subject, body);
+                _logger.LogInformation("Login link email sent to {Email}", email);
             }
-            // If the customer is not found, we do nothing. This prevents attackers from discovering valid email addresses.
+            else
+            {
+                _logger.LogInformation("Login link requested for non-existent email: {Email}", email);
+            }
         }
 
         public async Task<PortalDataDto> VerifyLoginTokenAsync(string token)
         {
+            _logger.LogInformation("VerifyLoginTokenAsync called with token: {Token}", token);
+
             var loginToken = await _dbContext.LoginTokens
                 .Include(t => t.Customer)
                 .FirstOrDefaultAsync(t => string.Equals(t.Token, token, StringComparison.OrdinalIgnoreCase));
 
             if (loginToken == null)
             {
-                // Token is invalid, expired, or already used.
+                _logger.LogWarning("Login token not found for token: {Token}", token);
+                return null;
+            }
+
+            _logger.LogInformation("Login token found. Token: {Token}, IsUsed: {IsUsed}, ExpiryDate: {ExpiryDate}",
+                loginToken.Token, loginToken.IsUsed, loginToken.ExpiryDate);
+
+            // Re-add the original checks for debugging purposes
+            if (loginToken.IsUsed)
+            {
+                _logger.LogWarning("Login token {Token} is already used.", token);
+                return null;
+            }
+
+            if (loginToken.ExpiryDate <= DateTimeOffset.UtcNow)
+            {
+                _logger.LogWarning("Login token {Token} has expired. ExpiryDate: {ExpiryDate}, UtcNow: {UtcNow}",
+                    token, loginToken.ExpiryDate, DateTimeOffset.UtcNow);
                 return null;
             }
 
             // Mark the token as used so it cannot be used again.
             loginToken.IsUsed = true;
             await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Login token {Token} successfully verified and marked as used.", token);
 
             var customerBookings = await _dbContext.Bookings
                 .Where(b => b.CustomerId == loginToken.CustomerId)
