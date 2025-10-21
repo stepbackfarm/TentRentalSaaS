@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { getQuote, createBooking } from '../services/api';
 
 function BookingForm({ startDate, endDate }) {
+  const location = useLocation();
+  const tentType = location.state?.tentType || '20x40 Event Tent'; // Default fallback
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [address, setAddress] = useState('');
@@ -84,7 +86,7 @@ function BookingForm({ startDate, endDate }) {
           billingZipCode: isBillingSameAsEvent ? null : billingZipCode,
           specialRequests,
           paymentMethodId: paymentMethod.id,
-          tentType: '20x40 Event Tent',
+          tentType: tentType,
         });
         navigate('/confirmation');
       } catch (err) {

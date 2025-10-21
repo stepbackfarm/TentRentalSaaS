@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function ConfirmationPage() {
+  useEffect(() => {
+    // Dispatch a custom event to notify other parts of the app
+    window.dispatchEvent(new CustomEvent('bookingCompleted'));
+  }, []);
+
   const eventDetails = {
     title: "Your Tent Rental",
     description: "Your tent rental is confirmed.",

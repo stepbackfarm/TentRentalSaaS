@@ -1,27 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getAvailability } from '../services/api';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { normalizeDate } from '../helpers/utils';
 
 function Calendar({ onDateSelect, tentType }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [bookedDates, setBookedDates] = useState([]);
+  const [unavailableDates, setUnavailableDates] = useState(new Set());
 
   useEffect(() => {
-    const fetchBookedDates = async () => {
+    const fetchUnavailableDates = async () => {
+      if (!tentType) return;
       try {
         const today = new Date();
         const sixtyDaysLater = new Date();
         sixtyDaysLater.setDate(today.getDate() + 60);
+
         const dates = await getAvailability(tentType, today.toISOString(), sixtyDaysLater.toISOString());
-        setBookedDates(dates.map(dateStr => new Date(dateStr)));
+
+        const normalizedDates = new Set(
+          dates.map(dateStr => normalizeDate(new Date(dateStr)).getTime())
+        );
+        setUnavailableDates(normalizedDates);
       } catch (error) {
-        console.error('Failed to fetch booked dates:', error);
+        console.error('Failed to fetch unavailable dates:', error);
       }
     };
-    fetchBookedDates();
-  }, []);
+    fetchUnavailableDates();
+  }, [tentType]);
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
@@ -32,24 +39,33 @@ function Calendar({ onDateSelect, tentType }) {
     }
   };
 
+  const isDateUnavailable = (date) => {
+    return unavailableDates.has(normalizeDate(date).getTime());
+  };
+
+  const dayClassName = (date) => {
+    const baseClasses = 'mx-1 my-1 p-2 rounded-full text-center cursor-pointer transition-colors duration-200';
+    if (isDateUnavailable(date)) {
+      return `${baseClasses} bg-red-600 text-gray-300 cursor-not-allowed`;
+    }
+    return `${baseClasses} hover:bg-blue-600`;
+  };
+
+  const calendarKey = useMemo(() => tentType + unavailableDates.size, [tentType, unavailableDates]);
+
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex flex-col items-center w-full" key={calendarKey}>
       <DatePicker
         selected={startDate}
         onChange={handleDateChange}
         startDate={startDate}
         endDate={endDate}
         selectsRange
-        filterDate={(date) => !bookedDates.some(d => d.toLocaleDateString() === date.toLocaleDateString())}
+        filterDate={(date) => !isDateUnavailable(date)}
         minDate={new Date()}
-        inline // Show the calendar inline
+        inline
         calendarClassName="bg-gray-800 border-blue-400 text-white rounded-lg shadow-lg"
-        dayClassName={(date) =>
-          `mx-1 my-1 p-2 rounded-full text-center cursor-pointer transition-colors duration-200 ` +
-          (bookedDates.some(d => d.toLocaleDateString() === date.toLocaleDateString())
-            ? 'bg-red-600 text-gray-300 cursor-not-allowed'
-            : 'hover:bg-blue-600')
-        }
+        dayClassName={dayClassName}
         monthClassName={() => 'bg-gray-700'}
         headerClassName="bg-gray-700 p-2 rounded-t-lg"
         className="w-full bg-gray-700 text-white p-2 rounded-md border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
