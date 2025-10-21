@@ -30,10 +30,10 @@ namespace TentRentalSaaS.Api.DTOs
         public string? BillingZipCode { get; set; }
 
         [Required]
-        public DateTime EventDate { get; set; }
+        public DateTimeOffset EventDate { get; set; }
 
         [Required]
-        public DateTime EventEndDate { get; set; }
+        public DateTimeOffset EventEndDate { get; set; }
 
         [Required]
         [MinLength(1)]

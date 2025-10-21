@@ -29,13 +29,13 @@ namespace TentRentalSaaS.Api.Services
             _configuration = configuration;
         }
 
-        public async Task<IEnumerable<DateTime>> GetAvailabilityAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<DateTimeOffset>> GetAvailabilityAsync(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var overlappingBookings = await _dbContext.Bookings
                 .Where(b => b.Status == BookingStatus.Confirmed && b.EventDate < endDate && b.EventEndDate > startDate)
                 .ToListAsync();
 
-            var unavailableDates = new List<DateTime>();
+            var unavailableDates = new List<DateTimeOffset>();
             foreach (var booking in overlappingBookings)
             {
                 for (var date = booking.EventDate.Date; date <= booking.EventEndDate.Date; date = date.AddDays(1))
@@ -106,7 +106,7 @@ namespace TentRentalSaaS.Api.Services
                     customer.City = customerCity;
                     customer.State = customerState;
                     customer.ZipCode = customerZipCode;
-                    customer.LastModifiedDate = DateTime.UtcNow;
+                    customer.LastModifiedDate = DateTimeOffset.UtcNow;
                 }
             }
             else
@@ -125,8 +125,8 @@ namespace TentRentalSaaS.Api.Services
                     City = customerCity,
                     State = customerState,
                     ZipCode = customerZipCode,
-                    CreatedDate = DateTime.UtcNow,
-                    LastModifiedDate = DateTime.UtcNow
+                    CreatedDate = DateTimeOffset.UtcNow,
+                    LastModifiedDate = DateTimeOffset.UtcNow
                 };
                 _dbContext.Customers.Add(customer);
             }
@@ -160,9 +160,9 @@ namespace TentRentalSaaS.Api.Services
                 EventEndDate = bookingRequest.EventEndDate,
                 TentType = bookingRequest.TentType,
                 SpecialRequests = bookingRequest.SpecialRequests,
-                BookingDate = DateTime.UtcNow,
-                CreatedDate = DateTime.UtcNow,
-                LastModifiedDate = DateTime.UtcNow,
+                BookingDate = DateTimeOffset.UtcNow,
+                CreatedDate = DateTimeOffset.UtcNow,
+                LastModifiedDate = DateTimeOffset.UtcNow,
                 StripePaymentIntentId = paymentIntent.Id,
                 Status = BookingStatus.Confirmed,
                 Customer = customer,
@@ -288,7 +288,7 @@ namespace TentRentalSaaS.Api.Services
             }
         }
 
-        public async Task<IEnumerable<Booking>> GetBookingsForDateRangeAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<Booking>> GetBookingsForDateRangeAsync(DateTimeOffset startDate, DateTimeOffset endDate)
         {
             return await _dbContext.Bookings
                 .Include(b => b.Customer)

@@ -21,7 +21,7 @@ namespace TentRentalSaaS.Api.Controllers
         }
 
         [HttpGet("availability")]
-        public async Task<IActionResult> GetAvailability([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        public async Task<IActionResult> GetAvailability([FromQuery] DateTimeOffset startDate, [FromQuery] DateTimeOffset endDate)
         {
             var unavailableDates = await _bookingService.GetAvailabilityAsync(startDate, endDate);
             return Ok(unavailableDates);

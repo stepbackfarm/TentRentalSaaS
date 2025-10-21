@@ -15,8 +15,8 @@ namespace TentRentalSaaS.Api.Models
         public string City { get; set; } = string.Empty;
         public string State { get; set; } = string.Empty;
         public string ZipCode { get; set; } = string.Empty;
-        public DateTime CreatedDate { get; set; }
-        public DateTime LastModifiedDate { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
+        public DateTimeOffset LastModifiedDate { get; set; }
 
         // Navigation property
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
