@@ -23,7 +23,7 @@ function HomePage() {
         <div className="mt-8">
           <h2 className="text-2xl font-bold text-center text-blue-400 mb-4">Our Tent</h2>
           <div className="bg-gray-700 p-6 rounded-lg">
-            <p className="text-lg"><span className="font-semibold">Size:</span> 20x20 feet</p>
+            <p className="text-lg"><span className="font-semibold">Size:</span> 20x40 feet</p>
             <p className="text-lg"><span className="font-semibold">Capacity:</span> Seats 40-50 people</p>
             <p className="text-lg"><span className="font-semibold">Includes:</span> Tent, setup, and takedown</p>
             <p className="text-lg"><span className="font-semibold">Price:</span> $250 per day</p>

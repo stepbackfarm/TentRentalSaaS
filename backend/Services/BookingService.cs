@@ -31,20 +31,31 @@ namespace TentRentalSaaS.Api.Services
 
         public async Task<IEnumerable<DateTimeOffset>> GetAvailabilityAsync(string tentType, DateTimeOffset startDate, DateTimeOffset endDate)
         {
-            var bookedDatesForTentType = await _dbContext.Bookings
+            var overlappingBookings = await _dbContext.Bookings
                 .Where(b => b.Status == BookingStatus.Confirmed && b.TentType == tentType && b.EventDate < endDate && b.EventEndDate > startDate)
-                .SelectMany(b => Enumerable.Range(0, 1 + (int)(b.EventEndDate - b.EventDate).TotalDays).Select(offset => b.EventDate.AddDays(offset).Date))
-                .Distinct()
                 .ToListAsync();
 
+            var bookedDates = new HashSet<DateTime>();
+
+            foreach (var booking in overlappingBookings)
+            {
+                for (var date = booking.EventDate; date <= booking.EventEndDate; date = date.AddDays(1))
+                {
+                    bookedDates.Add(date.Date);
+                }
+            }
+
             var manuallyUnavailableDates = await _dbContext.TentBlockoutDates
-                .Where(ta => ta.TentType == tentType && ta.Date < endDate && ta.Date > startDate)
+                .Where(ta => ta.TentType == tentType && ta.Date >= startDate && ta.Date <= endDate)
                 .Select(ta => ta.Date.Date)
                 .ToListAsync();
 
-            var allUnavailableDates = bookedDatesForTentType.Concat(manuallyUnavailableDates).Distinct();
+            foreach(var date in manuallyUnavailableDates)
+            {
+                bookedDates.Add(date);
+            }
 
-            return allUnavailableDates.Select(d => new DateTimeOffset(d, TimeSpan.Zero));
+            return bookedDates.Select(d => new DateTimeOffset(d, TimeSpan.Zero));
         }
 
         public async Task<QuoteResponseDto> GetQuoteAsync(QuoteRequestDto quoteRequest)
