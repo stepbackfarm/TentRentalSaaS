@@ -81,6 +81,7 @@ function BookingForm({ startDate, endDate }) {
           billingZipCode: isBillingSameAsEvent ? null : billingZipCode,
           specialRequests,
           paymentMethodId: paymentMethod.id,
+          tentType: '20x40 Event Tent',
         });
         navigate('/confirmation');
       } catch (err) {
