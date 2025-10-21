@@ -18,6 +18,7 @@ function BookingForm({ startDate, endDate }) {
   const [specialRequests, setSpecialRequests] = useState('');
   const [quote, setQuote] = useState(null);
   const [isFetchingQuote, setIsFetchingQuote] = useState(false);
+  const [bookingError, setBookingError] = useState('');
 
   const stripe = useStripe();
   const elements = useElements();
@@ -64,7 +65,9 @@ function BookingForm({ startDate, endDate }) {
 
     if (error) {
       console.log('[error]', error);
+      setBookingError(error.message);
     } else {
+      setBookingError(''); // Clear previous errors
       try {
         await createBooking({
           eventDate: startDate.toISOString(),
@@ -85,7 +88,7 @@ function BookingForm({ startDate, endDate }) {
         });
         navigate('/confirmation');
       } catch (err) {
-        alert('Booking failed.');
+        setBookingError(err.response?.data?.message || err.message || 'Booking failed.');
       }
     }
   };
@@ -197,6 +200,12 @@ function BookingForm({ startDate, endDate }) {
           <CardElement id="card-element" options={cardElementOptions} />
         </div>
       </div>
+
+      {bookingError && (
+        <div className="text-red-500 text-center p-2 bg-red-100 rounded">
+          {bookingError}
+        </div>
+      )}
 
       <button type="submit" disabled={!stripe || !quote || isFetchingQuote} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-400">
         Book Now

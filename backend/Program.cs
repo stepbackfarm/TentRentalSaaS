@@ -85,6 +85,20 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
+
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (TentRentalSaaS.Api.Helpers.BookingConflictException ex)
+    {
+        context.Response.StatusCode = StatusCodes.Status409Conflict;
+        await context.Response.WriteAsJsonAsync(new { message = ex.Message });
+    }
+});
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

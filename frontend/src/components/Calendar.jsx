@@ -40,13 +40,13 @@ function Calendar({ onDateSelect, tentType }) {
         startDate={startDate}
         endDate={endDate}
         selectsRange
-        filterDate={(date) => !bookedDates.some(d => d.getTime() === date.getTime())}
+        filterDate={(date) => !bookedDates.some(d => d.toLocaleDateString() === date.toLocaleDateString())}
         minDate={new Date()}
         inline // Show the calendar inline
         calendarClassName="bg-gray-800 border-blue-400 text-white rounded-lg shadow-lg"
         dayClassName={(date) =>
           `mx-1 my-1 p-2 rounded-full text-center cursor-pointer transition-colors duration-200 ` +
-          (bookedDates.some(d => d.getTime() === date.getTime())
+          (bookedDates.some(d => d.toLocaleDateString() === date.toLocaleDateString())
             ? 'bg-red-600 text-gray-300 cursor-not-allowed'
             : 'hover:bg-blue-600')
         }

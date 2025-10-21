@@ -101,7 +101,8 @@ namespace TentRentalSaaS.Api.Services
             var unavailableDates = await GetAvailabilityAsync(bookingRequest.TentType, bookingRequest.EventDate, bookingRequest.EventEndDate);
             if (unavailableDates.Any())
             {
-                throw new Exception("The selected dates are not available for the chosen tent type.");
+                var unavailableDatesString = string.Join(", ", unavailableDates.Select(d => d.ToString("MM/dd/yyyy")));
+                throw new BookingConflictException($"The following dates are not available for the chosen tent type: {unavailableDatesString}");
             }
 
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);
