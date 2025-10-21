@@ -29,22 +29,22 @@ namespace TentRentalSaaS.Api.Services
             _configuration = configuration;
         }
 
-        public async Task<IEnumerable<DateTimeOffset>> GetAvailabilityAsync(DateTimeOffset startDate, DateTimeOffset endDate)
+        public async Task<IEnumerable<DateTimeOffset>> GetAvailabilityAsync(string tentType, DateTimeOffset startDate, DateTimeOffset endDate)
         {
-            var overlappingBookings = await _dbContext.Bookings
-                .Where(b => b.Status == BookingStatus.Confirmed && b.EventDate < endDate && b.EventEndDate > startDate)
+            var bookedDatesForTentType = await _dbContext.Bookings
+                .Where(b => b.Status == BookingStatus.Confirmed && b.TentType == tentType && b.EventDate < endDate && b.EventEndDate > startDate)
+                .SelectMany(b => Enumerable.Range(0, 1 + (int)(b.EventEndDate - b.EventDate).TotalDays).Select(offset => b.EventDate.AddDays(offset).Date))
+                .Distinct()
                 .ToListAsync();
 
-            var unavailableDates = new List<DateTimeOffset>();
-            foreach (var booking in overlappingBookings)
-            {
-                for (var date = booking.EventDate.Date; date <= booking.EventEndDate.Date; date = date.AddDays(1))
-                {
-                    unavailableDates.Add(date);
-                }
-            }
+            var manuallyUnavailableDates = await _dbContext.TentBlockoutDates
+                .Where(ta => ta.TentType == tentType && ta.Date < endDate && ta.Date > startDate)
+                .Select(ta => ta.Date.Date)
+                .ToListAsync();
 
-            return unavailableDates.Distinct();
+            var allUnavailableDates = bookedDatesForTentType.Concat(manuallyUnavailableDates).Distinct();
+
+            return allUnavailableDates.Select(d => new DateTimeOffset(d, TimeSpan.Zero));
         }
 
         public async Task<QuoteResponseDto> GetQuoteAsync(QuoteRequestDto quoteRequest)
@@ -86,6 +86,12 @@ namespace TentRentalSaaS.Api.Services
         public async Task<BookingResponseDto> CreateBookingAsync(BookingRequestDto bookingRequest)
         {
             _logger.LogInformation("CreateBookingAsync called with EventDate: {EventDate}, EventEndDate: {EventEndDate}", bookingRequest.EventDate, bookingRequest.EventEndDate);
+
+            var unavailableDates = await GetAvailabilityAsync(bookingRequest.TentType, bookingRequest.EventDate, bookingRequest.EventEndDate);
+            if (unavailableDates.Any())
+            {
+                throw new Exception("The selected dates are not available for the chosen tent type.");
+            }
 
             var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.Email == bookingRequest.CustomerEmail);
 

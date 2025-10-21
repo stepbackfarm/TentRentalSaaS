@@ -3,7 +3,7 @@ import { getAvailability } from '../services/api';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-function Calendar({ onDateSelect }) {
+function Calendar({ onDateSelect, tentType }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [bookedDates, setBookedDates] = useState([]);
@@ -14,7 +14,7 @@ function Calendar({ onDateSelect }) {
         const today = new Date();
         const sixtyDaysLater = new Date();
         sixtyDaysLater.setDate(today.getDate() + 60);
-        const dates = await getAvailability(today.toISOString(), sixtyDaysLater.toISOString());
+        const dates = await getAvailability(tentType, today.toISOString(), sixtyDaysLater.toISOString());
         setBookedDates(dates.map(dateStr => new Date(dateStr)));
       } catch (error) {
         console.error('Failed to fetch booked dates:', error);

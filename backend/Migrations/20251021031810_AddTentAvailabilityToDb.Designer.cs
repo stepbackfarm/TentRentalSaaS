@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TentRentalSaaS.Api.Models;
@@ -11,9 +12,11 @@ using TentRentalSaaS.Api.Models;
 namespace TentRentalSaaS.Api.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251021031810_AddTentAvailabilityToDb")]
+    partial class AddTentAvailabilityToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,7 +176,7 @@ namespace TentRentalSaaS.Api.Migrations
                     b.ToTable("LoginTokens");
                 });
 
-            modelBuilder.Entity("TentRentalSaaS.Api.Models.TentBlockoutDate", b =>
+            modelBuilder.Entity("TentRentalSaaS.Api.Models.TentAvailability", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,7 +193,7 @@ namespace TentRentalSaaS.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TentBlockoutDates");
+                    b.ToTable("TentAvailability");
                 });
 
             modelBuilder.Entity("TentRentalSaaS.Api.Models.Booking", b =>

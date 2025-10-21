@@ -6,10 +6,10 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-export const getAvailability = async (startDate, endDate) => {
+export const getAvailability = async (tentType, startDate, endDate) => {
   try {
     const response = await api.get('/bookings/availability', {
-      params: { startDate, endDate },
+      params: { tentType, startDate, endDate },
     });
     return response.data;
   } catch (error) {

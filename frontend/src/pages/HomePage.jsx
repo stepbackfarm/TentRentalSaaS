@@ -16,7 +16,7 @@ function HomePage() {
         <div className="flex justify-center bg-gray-700 p-4 rounded-lg">
           <div>
             <h2 className="text-xl font-semibold text-center mb-4">Select a Date</h2>
-            <Calendar onDateSelect={handleDateSelect} />
+            <Calendar onDateSelect={handleDateSelect} tentType="20x40 Event Tent" />
           </div>
         </div>
 

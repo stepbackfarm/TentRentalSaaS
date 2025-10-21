@@ -12,6 +12,7 @@ namespace TentRentalSaaS.Api.Models
 
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<TentBlockoutDate> TentBlockoutDates { get; set; }
         public DbSet<LoginToken> LoginTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
