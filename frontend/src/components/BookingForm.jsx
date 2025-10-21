@@ -29,8 +29,8 @@ function BookingForm({ startDate, endDate }) {
         setIsFetchingQuote(true);
         try {
           const quoteRequest = {
-            startDate,
-            endDate,
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
             address: { address, city, state, zipCode },
           };
           const quoteData = await getQuote(quoteRequest);
@@ -67,8 +67,8 @@ function BookingForm({ startDate, endDate }) {
     } else {
       try {
         await createBooking({
-          eventDate: startDate,
-          eventEndDate: endDate,
+          eventDate: startDate.toISOString(),
+          eventEndDate: endDate.toISOString(),
           customerName,
           customerEmail,
           address,
