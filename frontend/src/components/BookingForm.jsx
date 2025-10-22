@@ -120,28 +120,28 @@ function BookingForm({ startDate, endDate }) {
       </h2>
       
       <div>
-        <label htmlFor="customerName">Name</label>
-        <input id="customerName" type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} required />
+        <label htmlFor="customerName" className="block text-sm font-bold text-gray-300 mb-1">Name</label>
+        <input id="customerName" type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
       </div>
       <div>
-        <label htmlFor="customerEmail">Email</label>
-        <input id="customerEmail" type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} required />
+        <label htmlFor="customerEmail" className="block text-sm font-bold text-gray-300 mb-1">Email</label>
+        <input id="customerEmail" type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
       </div>
       <div>
-        <label htmlFor="address">Address</label>
-        <input id="address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} required />
+        <label htmlFor="address" className="block text-sm font-bold text-gray-300 mb-1">Address</label>
+        <input id="address" type="text" value={address} onChange={(e) => setAddress(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
       </div>
       <div>
-        <label htmlFor="city">City</label>
-        <input id="city" type="text" value={city} onChange={(e) => setCity(e.target.value)} required />
+        <label htmlFor="city" className="block text-sm font-bold text-gray-300 mb-1">City</label>
+        <input id="city" type="text" value={city} onChange={(e) => setCity(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
       </div>
       <div>
-        <label htmlFor="state">State</label>
-        <input id="state" type="text" value={state} onChange={(e) => setState(e.target.value)} required />
+        <label htmlFor="state" className="block text-sm font-bold text-gray-300 mb-1">State</label>
+        <input id="state" type="text" value={state} onChange={(e) => setState(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
       </div>
       <div>
-        <label htmlFor="zipCode">Zip Code</label>
-        <input id="zipCode" type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required />
+        <label htmlFor="zipCode" className="block text-sm font-bold text-gray-300 mb-1">Zip Code</label>
+        <input id="zipCode" type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
       </div>
 
       <div>
@@ -159,26 +159,26 @@ function BookingForm({ startDate, endDate }) {
       {!isBillingSameAsEvent && (
         <>
           <div>
-            <label htmlFor="billingAddress">Billing Address</label>
-            <input id="billingAddress" type="text" value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} required />
+            <label htmlFor="billingAddress" className="block text-sm font-bold text-gray-300 mb-1">Billing Address</label>
+            <input id="billingAddress" type="text" value={billingAddress} onChange={(e) => setBillingAddress(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
           </div>
           <div>
-            <label htmlFor="billingCity">Billing City</label>
-            <input id="billingCity" type="text" value={billingCity} onChange={(e) => setBillingCity(e.target.value)} required />
+            <label htmlFor="billingCity" className="block text-sm font-bold text-gray-300 mb-1">Billing City</label>
+            <input id="billingCity" type="text" value={billingCity} onChange={(e) => setBillingCity(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
           </div>
           <div>
-            <label htmlFor="billingState">Billing State</label>
-            <input id="billingState" type="text" value={billingState} onChange={(e) => setBillingState(e.target.value)} required />
+            <label htmlFor="billingState" className="block text-sm font-bold text-gray-300 mb-1">Billing State</label>
+            <input id="billingState" type="text" value={billingState} onChange={(e) => setBillingState(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
           </div>
           <div>
-            <label htmlFor="billingZipCode">Billing Zip Code</label>
-            <input id="billingZipCode" type="text" value={billingZipCode} onChange={(e) => setBillingZipCode(e.target.value)} required />
+            <label htmlFor="billingZipCode" className="block text-sm font-bold text-gray-300 mb-1">Billing Zip Code</label>
+            <input id="billingZipCode" type="text" value={billingZipCode} onChange={(e) => setBillingZipCode(e.target.value)} required className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
           </div>
         </>
       )}
 
-      <div className="bg-gray-100 p-4 rounded-md">
-        <h3 className="text-lg font-bold mb-2">Price Quote</h3>
+      <div className="bg-gray-800 p-4 rounded-md border border-gray-600">
+        <h3 className="text-lg font-bold mb-2 text-white">Price Quote</h3>
         {isFetchingQuote && <p>Calculating price...</p>}
         {quote && !isFetchingQuote && (
             <>
@@ -192,8 +192,8 @@ function BookingForm({ startDate, endDate }) {
       </div>
 
       <div>
-        <label htmlFor="specialRequests">Special Requests</label>
-        <textarea id="specialRequests" value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)} rows="3" />
+        <label htmlFor="specialRequests" className="block text-sm font-bold text-gray-300 mb-1">Special Requests</label>
+        <textarea id="specialRequests" value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)} rows="3" className="p-2 rounded-md border border-gray-600 w-full bg-gray-800 text-white placeholder-gray-400" />
       </div>
 
       <div>
