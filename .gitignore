@@ -1,3 +1,17 @@
+# Environment files
+.env
+.env.local
+backend/.env
+frontend/.env
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+
+# Playwright artifacts
+playwright-report/
+tests/artifacts/
+test-results/
+
 # Visual Studio Code
 .vscode/
 
@@ -42,6 +56,9 @@
 *.snupkg
 *.lock.json
 project.lock.json
+
+# Docker
+pgdata/
 
 # Build results
 [Dd]ebug/

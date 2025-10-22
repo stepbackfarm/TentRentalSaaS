@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  api:
+    working_dir: /src
+    volumes:
+      - ./backend:/src
+      - /src/bin
+      - /src/obj
+    command: bash -lc "dotnet restore && dotnet watch --non-interactive run --urls http://0.0.0.0:5000"
+
+  web:
+    working_dir: /usr/src/app
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    command: sh -lc "npm i && npm run dev -- --host 0.0.0.0 --port 5173"

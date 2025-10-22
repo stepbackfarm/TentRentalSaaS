@@ -1,0 +1,21 @@
+{
+  "name": "tentrental-root",
+  "private": true,
+  "scripts": {
+    "setup": "bash ./setup.sh",
+    "docker:full": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
+    "docker:full:down": "docker-compose down -v --remove-orphans",
+    "dev:db": "docker-compose up -d db",
+    "dev:api": "cross-env ASPNETCORE_ENVIRONMENT=Development dotnet watch --project backend/TentRentalSaaS.Api.csproj --no-hot-reload",
+    "dev:web": "npm --prefix frontend run dev",
+    "dev:all": "npm run dev:db && concurrently -k -n API,WEB -c cyan,magenta \"npm run dev:api\" \"npm run dev:web\"",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3"
+  }
+}

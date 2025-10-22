@@ -1,23 +1,23 @@
-# Stage 1: Build the application
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
-
-# Copy the .csproj files and restore dependencies
-COPY *.csproj ./
+# ===== DEV target (hot reload) =====
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
+WORKDIR /src
+COPY . .
 RUN dotnet restore
+EXPOSE 5000
+ENV ASPNETCORE_URLS=http://0.0.0.0:5000
+CMD ["dotnet", "watch", "--non-interactive", "run"]
 
-# Copy the rest of the backend files and build the application
-COPY . ./
-RUN dotnet build -c Release -o /app/build
-
-# Publish the application
-FROM build AS publish
+# ===== BUILD target (publish) =====
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
-# Stage 2: Create the runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+# ===== PROD target =====
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS prod
 WORKDIR /app
-EXPOSE 8080
-
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
+EXPOSE 5000
+ENV ASPNETCORE_URLS=http://0.0.0.0:5000
 ENTRYPOINT ["dotnet", "TentRentalSaaS.Api.dll"]
