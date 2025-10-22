@@ -40,14 +40,14 @@ END:VCALENDAR`;
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg text-center max-w-md w-full">
-        <h1 className="text-3xl font-bold text-green-400 mb-4">Booking Confirmed!</h1>
-        <p className="text-gray-300 mb-6">Your tent is booked. We've sent a confirmation to your email.</p>
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col items-center justify-center p-4">
+      <div className="bg-gray-100 dark:bg-gray-800 p-8 rounded-lg shadow-lg text-center max-w-md w-full border border-gray-200 dark:border-gray-700">
+        <h1 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-4">Booking Confirmed!</h1>
+        <p className="text-gray-700 dark:text-gray-300 mb-6">Your tent is booked. We've sent a confirmation to your email.</p>
         
-        <div className="text-left my-6 p-4 border-t border-b border-gray-700">
-          <h2 className="text-xl font-bold text-blue-400 mb-3">What to Expect Next</h2>
-          <ul className="list-disc list-inside text-gray-300 space-y-2">
+        <div className="text-left my-6 p-4 border-t border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-3">What to Expect Next</h2>
+          <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
             <li>You will receive a confirmation email shortly.</li>
             <li>We will contact you 2-3 days before your event to confirm setup details.</li>
             <li>Our team will arrive on the day of your event to set up the tent.</li>
@@ -56,8 +56,8 @@ END:VCALENDAR`;
         </div>
 
         <div className="text-center my-6">
-          <h2 className="text-xl font-bold text-blue-400 mb-3">Contact Us</h2>
-          <p className="text-gray-300">Have questions? Email us at <a href="mailto:info@stepbackfarm.com" className="text-blue-400 hover:underline">info@stepbackfarm.com</a></p>
+          <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-3">Contact Us</h2>
+          <p className="text-gray-700 dark:text-gray-300">Have questions? Email us at <a href="mailto:contact@tentrentalsaas.com" className="text-blue-600 dark:text-blue-400 hover:underline">contact@tentrentalsaas.com</a></p>
         </div>
 
         <div className="my-6">
@@ -76,7 +76,7 @@ END:VCALENDAR`;
         </div>
 
         <div className="text-center mt-6">
-          <h2 className="text-xl font-bold text-blue-400 mb-3">Share Your Event!</h2>
+          <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-3">Share Your Event!</h2>
           <div className="flex justify-center space-x-4">
             <a href="https://www.facebook.com/sharer/sharer.php?u=https://tentrentalsaas.com" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-400">Facebook</a>
             <a href="https://twitter.com/intent/tweet?url=https://tentrentalsaas.com&text=We just booked a tent for our event!" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300">Twitter</a>

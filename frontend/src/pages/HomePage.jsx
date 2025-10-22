@@ -30,16 +30,16 @@ function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 sm:p-8">
-      <div className="w-full max-w-4xl bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-400 mb-6 sm:mb-8">Tent Rental Booking</h1>
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col items-center p-4 sm:p-8">
+      <div className="w-full max-w-4xl bg-gray-100 dark:bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-600 dark:text-blue-400 mb-6 sm:mb-8">Tent Rental Booking</h1>
 
         {/* Tent selection can be added here in the future */}
         {/* For now, we are using the hardcoded '20x40 Event Tent' */}
 
-        <div className="flex justify-center bg-gray-700 p-4 rounded-lg">
+        <div className="flex justify-center bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
           <div>
-            <h2 className="text-xl font-semibold text-center mb-4">Select a Date</h2>
+            <h2 className="text-xl font-semibold text-center mb-4 text-gray-900 dark:text-white">Select a Date</h2>
             <Calendar
               key={bookingCount}
               onDateSelect={handleDateSelect}
@@ -49,25 +49,25 @@ function HomePage() {
         </div>
 
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-center text-blue-400 mb-4">Our Tent</h2>
-          <div className="bg-gray-700 p-6 rounded-lg">
-            <p className="text-lg"><span className="font-semibold">Size:</span> 20x40 feet</p>
-            <p className="text-lg"><span className="font-semibold">Capacity:</span> Seats 40-50 people</p>
-            <p className="text-lg"><span className="font-semibold">Includes:</span> Tent, setup, and takedown</p>
-            <p className="text-lg"><span className="font-semibold">Price:</span> $250 per day</p>
+          <h2 className="text-2xl font-bold text-center text-blue-600 dark:text-blue-400 mb-4">Our Tent</h2>
+          <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+            <p className="text-lg text-gray-900 dark:text-white"><span className="font-semibold">Size:</span> 20x40 feet</p>
+            <p className="text-lg text-gray-900 dark:text-white"><span className="font-semibold">Capacity:</span> Seats 40-50 people</p>
+            <p className="text-lg text-gray-900 dark:text-white"><span className="font-semibold">Includes:</span> Tent, setup, and takedown</p>
+            <p className="text-lg text-gray-900 dark:text-white"><span className="font-semibold">Price:</span> $250 per day</p>
           </div>
         </div>
 
         <div className="mt-8">
-          <h2 className="text-2xl font-bold text-center text-blue-400 mb-4">Testimonials</h2>
-          <div className="bg-gray-700 p-6 rounded-lg space-y-4">
+          <h2 className="text-2xl font-bold text-center text-blue-600 dark:text-blue-400 mb-4">Testimonials</h2>
+          <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg space-y-4">
             <div>
-              <p className="text-lg italic">"The tent was perfect for our party. The team was professional and the setup was quick."</p>
-              <p className="text-right font-semibold">- Jane Doe</p>
+              <p className="text-lg italic text-gray-700 dark:text-gray-300">"The tent was perfect for our party. The team was professional and the setup was quick."</p>
+              <p className="text-right font-semibold text-gray-900 dark:text-white">- Jane Doe</p>
             </div>
             <div>
-              <p className="text-lg italic">"Great service and a great price. I would definitely recommend them to anyone."</p>
-              <p className="text-right font-semibold">- John Smith</p>
+              <p className="text-lg italic text-gray-700 dark:text-gray-300">"Great service and a great price. I would definitely recommend them to anyone."</p>
+              <p className="text-right font-semibold text-gray-900 dark:text-white">- John Smith</p>
             </div>
           </div>
         </div>

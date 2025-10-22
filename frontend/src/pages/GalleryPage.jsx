@@ -13,12 +13,12 @@ function GalleryPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 sm:p-8">
-      <div className="w-full max-w-6xl bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-400 mb-6 sm:mb-8">Gallery</h1>
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col items-center p-4 sm:p-8">
+      <div className="w-full max-w-6xl bg-gray-100 dark:bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-600 dark:text-blue-400 mb-6 sm:mb-8">Gallery</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map((src, index) => (
-            <div key={index} className="bg-gray-700 p-2 rounded-lg">
+            <div key={index} className="bg-gray-50 dark:bg-gray-700 p-2 rounded-lg border border-gray-200 dark:border-gray-600">
               <img src={src} alt={`Gallery image ${index + 1}`} className="w-full h-auto rounded-lg"/>
             </div>
           ))}

@@ -25,14 +25,14 @@ function FaqPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 sm:p-8">
-      <div className="w-full max-w-4xl bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-400 mb-6 sm:mb-8">Frequently Asked Questions</h1>
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col items-center p-4 sm:p-8">
+      <div className="w-full max-w-4xl bg-gray-100 dark:bg-gray-800 p-6 sm:p-8 rounded-lg shadow-lg">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-600 dark:text-blue-400 mb-6 sm:mb-8">Frequently Asked Questions</h1>
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <div key={index} className="bg-gray-700 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold text-blue-300">{faq.question}</h2>
-              <p className="mt-2 text-gray-300">{faq.answer}</p>
+            <div key={index} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+              <h2 className="text-xl font-semibold text-blue-600 dark:text-blue-300">{faq.question}</h2>
+              <p className="mt-2 text-gray-700 dark:text-gray-300">{faq.answer}</p>
             </div>
           ))}
         </div>
