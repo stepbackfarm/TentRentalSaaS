@@ -91,7 +91,7 @@ Located at `backend/.env`:
 ```env
 ASPNETCORE_ENVIRONMENT=Development
 ASPNETCORE_URLS=http://0.0.0.0:5000
-ConnectionStrings__Default=Host=localhost;Port=5433;Database=tent-rental-db;Username=postgres;***REMOVED***
+ConnectionStrings__Default=Host=localhost;Port=5433;Database=tent-rental-db;Username=postgres;Password=postgres
 ALLOWED_ORIGINS=http://localhost:5173
 STRIPE_SECRET_KEY=sk_test_... # Replace with your test key
 GOOGLE_MAPS_API_KEY=...       # Replace with your API key
@@ -261,7 +261,7 @@ Change if you have conflicts. Remember to update:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5433;Database=tent-rental-db;Username=postgres;***REMOVED***"
+    "DefaultConnection": "Host=localhost;Port=5433;Database=tent-rental-db;Username=postgres;Password=postgres"
   }
 }
 ```

@@ -35,7 +35,7 @@ namespace TentRentalSaaS.Api.Tests
             _loggerMock = new Mock<ILogger<BookingService>>();
 
             var inMemorySettings = new Dictionary<string, string> {
-                {"GoogleMaps:ApiKey", "***REMOVED***"},
+                {"GoogleMaps:ApiKey", "YOUR_API_KEY_HERE"},
             };
 
             _configuration = new ConfigurationBuilder()
