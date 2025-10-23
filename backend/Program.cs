@@ -139,11 +139,44 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 var app = builder.Build();
 
-// Automatically apply EF Core migrations on startup
+// Database initialization
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
-    dbContext.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    if (app.Environment.IsDevelopment())
+    {
+        // Auto-apply migrations in development only
+        logger.LogInformation("Development environment: Applying database migrations...");
+        dbContext.Database.Migrate();
+    }
+    else
+    {
+        // In production, verify database connectivity but don't auto-migrate
+        // Migrations should be applied manually before deployment
+        logger.LogInformation("Production environment: Verifying database connection...");
+        
+        if (!await dbContext.Database.CanConnectAsync())
+        {
+            logger.LogError("Cannot connect to database! Check connection string and network.");
+            throw new InvalidOperationException(
+                "Cannot connect to database. Ensure migrations are applied manually before deployment.");
+        }
+        
+        // Check if database is up to date
+        var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+        if (pendingMigrations.Any())
+        {
+            logger.LogWarning("Database has pending migrations: {Migrations}", 
+                string.Join(", ", pendingMigrations));
+            logger.LogWarning("Apply migrations manually using: dotnet ef database update");
+        }
+        else
+        {
+            logger.LogInformation("Database connection verified. No pending migrations.");
+        }
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -177,7 +210,43 @@ app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+// Health check endpoint with database connectivity check
+app.MapGet("/health", async (ApiDbContext dbContext) =>
+{
+    try
+    {
+        var canConnect = await dbContext.Database.CanConnectAsync();
+        if (canConnect)
+        {
+            return Results.Ok(new { 
+                status = "healthy", 
+                database = "connected",
+                timestamp = DateTimeOffset.UtcNow 
+            });
+        }
+        else
+        {
+            return Results.Json(
+                new { 
+                    status = "unhealthy", 
+                    database = "disconnected",
+                    timestamp = DateTimeOffset.UtcNow 
+                }, 
+                statusCode: 503);
+        }
+    }
+    catch (Exception ex)
+    {
+        return Results.Json(
+            new { 
+                status = "unhealthy", 
+                database = "error",
+                error = ex.Message,
+                timestamp = DateTimeOffset.UtcNow 
+            }, 
+            statusCode: 503);
+    }
+}).WithName("HealthCheck");
 
 app.MapControllers();
 
