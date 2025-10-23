@@ -54,19 +54,32 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         policy =>
         {
-            var allowedOriginsRaw = builder.Configuration["ALLOWED_ORIGINS"] ?? string.Empty;
-            var allowedOrigins = allowedOriginsRaw.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            if (allowedOrigins.Length > 0)
+            var allowedOriginsRaw = builder.Configuration["ALLOWED_ORIGINS"];
+            
+            if (string.IsNullOrWhiteSpace(allowedOriginsRaw))
             {
-                policy.WithOrigins(allowedOrigins)
+                // NEVER allow all origins in production - this is a security risk
+                if (builder.Environment.IsProduction())
+                {
+                    throw new InvalidOperationException(
+                        "ALLOWED_ORIGINS environment variable must be set in production!");
+                }
+                
+                // Only in development, allow localhost
+                policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
                       .AllowAnyMethod()
-                      .AllowAnyHeader();
+                      .AllowAnyHeader()
+                      .AllowCredentials();
             }
             else
             {
-                policy.AllowAnyOrigin()
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
+                var allowedOrigins = allowedOriginsRaw
+                    .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                
+                policy.WithOrigins(allowedOrigins)
+                      .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                      .WithHeaders("Content-Type", "Authorization")
+                      .AllowCredentials();
             }
         });
 });
@@ -115,29 +128,4 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.MapControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
