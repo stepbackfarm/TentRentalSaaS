@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TentRentalSaaS.Api.DTOs;
 using TentRentalSaaS.Api.Models;
+using TentRentalSaaS.Api.Helpers;
 
 namespace TentRentalSaaS.Api.Services
 {
@@ -82,15 +83,22 @@ namespace TentRentalSaaS.Api.Services
 
         public async Task<PortalDataDto> VerifyLoginTokenAsync(string token)
         {
-            _logger.LogInformation("VerifyLoginTokenAsync called with token: {Token}", token);
+            _logger.LogInformation("VerifyLoginTokenAsync called with token prefix: {TokenPrefix}***", 
+                token?.Substring(0, Math.Min(8, token?.Length ?? 0)));
 
-            var loginToken = await _dbContext.LoginTokens
+            // Get all active tokens and perform constant-time comparison
+            // to prevent timing attacks that could leak token information
+            var activeTokens = await _dbContext.LoginTokens
                 .Include(t => t.Customer)
-                .FirstOrDefaultAsync(t => string.Equals(t.Token, token));
+                .Where(t => !t.IsUsed && t.ExpiryDate > DateTimeOffset.UtcNow)
+                .ToListAsync();
+
+            var loginToken = activeTokens.FirstOrDefault(t => 
+                SecurityHelper.SecureStringEquals(t.Token, token));
 
             if (loginToken == null)
             {
-                _logger.LogWarning("Login token not found for token: {Token}", token);
+                _logger.LogWarning("SECURITY: Failed login attempt - invalid or expired token");
                 return null;
             }
 
