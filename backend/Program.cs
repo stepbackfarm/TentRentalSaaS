@@ -1,5 +1,6 @@
 using TentRentalSaaS.Api.Models;
 using TentRentalSaaS.Api.Services;
+using TentRentalSaaS.Api.Middleware;
 using Microsoft.EntityFrameworkCore;
 using AspNetCoreRateLimit;
 
@@ -201,6 +202,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Apply security headers first to all responses
+app.UseSecurityHeaders();
 
 // Apply rate limiting before CORS and authentication
 app.UseIpRateLimiting();
