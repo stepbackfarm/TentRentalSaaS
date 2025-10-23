@@ -1,6 +1,7 @@
 using TentRentalSaaS.Api.Models;
 using TentRentalSaaS.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,54 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+
+// Configure rate limiting to prevent abuse
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(options =>
+{
+    options.EnableEndpointRateLimiting = true;
+    options.StackBlockedRequests = false;
+    options.RealIpHeader = "X-Real-IP";
+    options.HttpStatusCode = 429;
+    options.GeneralRules = new List<RateLimitRule>
+    {
+        new RateLimitRule
+        {
+            Endpoint = "POST:/api/bookings",
+            Period = "5m",
+            Limit = 3  // 3 booking attempts per 5 minutes per IP
+        },
+        new RateLimitRule
+        {
+            Endpoint = "POST:/api/bookings/quote",
+            Period = "1m",
+            Limit = 10  // 10 quote requests per minute
+        },
+        new RateLimitRule
+        {
+            Endpoint = "POST:/api/auth/login",
+            Period = "1m",
+            Limit = 5  // 5 login attempts per minute
+        },
+        new RateLimitRule
+        {
+            Endpoint = "GET:/api/auth/verify",
+            Period = "1m",
+            Limit = 10  // 10 token verifications per minute
+        },
+        new RateLimitRule
+        {
+            Endpoint = "*",
+            Period = "1s",
+            Limit = 10  // 10 requests per second for all other endpoints
+        }
+    };
+});
+
+builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
 builder.Services.AddCors(options =>
 {
@@ -119,6 +168,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Apply rate limiting before CORS and authentication
+app.UseIpRateLimiting();
+
 app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
